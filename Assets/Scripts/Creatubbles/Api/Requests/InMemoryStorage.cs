@@ -29,7 +29,7 @@ using System.Collections;
 
 namespace Creatubbles.Api
 {
-    public class InMemorySecureStorage: ISecureStorage
+    public class InMemoryStorage: ISecureStorage
     {
         private static Dictionary<string, string> store = new Dictionary<string, string>();
 

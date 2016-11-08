@@ -44,9 +44,9 @@ public class WebDemoScript: MonoBehaviour
     // Use this for initialization
     void Start()
     {
-        creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemorySecureStorage());
-//        StartCoroutine(GetAppToken());
-        StartCoroutine(LogIn(SecretData.Username, SecretData.Password));
+        creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
+        StartCoroutine(GetAppToken());
+//        StartCoroutine(LogIn(SecretData.Username, SecretData.Password));
     }
 	
     // Update is called once per frame
@@ -58,45 +58,58 @@ public class WebDemoScript: MonoBehaviour
     IEnumerator GetAppToken()
     {
         UnityWebRequest www = creatubbles.CreatePostAuthenticationApplicationTokenRequest();
+        ApiRequest<string> request = new ApiRequest<string>(www);
 
         Log("Sending request: " + www.url);
 
         yield return www.Send();
 
-        if (www.isError)
+        if (request.IsAnyError)
         {
             Log("Request error: " + www.error);
-        }
-        else
-        {
-            Log("[Response] code: " + www.responseCode + "\n body: " + www.downloadHandler.text);
+			Log("Error body: " + www.downloadHandler.text);
 
-            OAuthTokenReponse data = JsonUtility.FromJson<OAuthTokenReponse>(www.downloadHandler.text);
-
-            StartCoroutine(GetLandingUrls(data.access_token));
+            yield break;
         }
+
+        Log("[Response] code: " + www.responseCode + "\n body: " + www.downloadHandler.text);
+
+        OAuthTokenReponse data = JsonUtility.FromJson<OAuthTokenReponse>(www.downloadHandler.text);
+
+        StartCoroutine(GetLandingUrls(data.access_token));
     }
 
     IEnumerator GetLandingUrls(string accessToken)
     {
-        UnityWebRequest www = creatubbles.CreateGetLandingUrlsRequest(accessToken);
+        ApiRequest<LandingUrlsResponse> request = creatubbles.CreateGetLandingUrlsRequest(accessToken);
 
-        Log("Sending request: " + www.url);
+        Log("Sending request: " + request.Url);
 
-        yield return www.Send();
+        yield return request.Send();
 
-        if (www.isError)
+        // handle errors
+        if (request.IsAnyError)
         {
-            Log("Request error: " + www.error);
+            if (request.IsSystemError)
+            {
+                Log("System error: " + request.SystemError);
+            }
+            else if (request.IsApiError)
+            {
+                if (request.apiErrors != null && request.apiErrors.Length > 0)
+                {
+                    Log("API error: " + request.apiErrors[0].title);
+                }
+            }
+
+            yield break;
         }
-        else
+
+        // handle response
+        LandingUrlsResponse response = request.data;
+        if (response != null && response.data != null && response.data.Length > 0)
         {
-            Log("[Response] code: " + www.responseCode + ", body: " + www.downloadHandler.text);
-
-            LandingUrlsResponse data = JsonUtility.FromJson<LandingUrlsResponse>(www.downloadHandler.text);
-
-            // TODO - remove
-            data.ToString();
+            Log("Response data: " + response.data[0].ToString());
         }
     }
 

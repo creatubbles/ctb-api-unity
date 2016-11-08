@@ -39,7 +39,6 @@ namespace Creatubbles.Api
             this.secureStorage = secureStorage;
         }
 
-        // make request methods intance methods
         public UnityWebRequest CreatePostAuthenticationApplicationTokenRequest()
         {
             string url = RequestUrl("/oauth/token");
@@ -70,14 +69,14 @@ namespace Creatubbles.Api
             return request;
         }
 
-        public UnityWebRequest CreateGetLandingUrlsRequest(string applicationToken)
+        public ApiRequest<LandingUrlsResponse> CreateGetLandingUrlsRequest(string applicationToken)
         {
             string url = RequestUrl("/landing_urls");
             UnityWebRequest request = UnityWebRequest.Get(url);
             SetAuthorizationHeaderBearerToken(request, applicationToken);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new ApiRequest<LandingUrlsResponse>(request);
         }
 
         public UnityWebRequest CreateGetLoggedInUserRequest(string userToken)
