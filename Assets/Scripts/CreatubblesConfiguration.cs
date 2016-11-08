@@ -27,9 +27,32 @@ using Creatubbles.Api;
 
 public class CreatubblesConfiguration: IApiConfiguration
 {
+	/*
+        API base url. Should be:
+        - "https://api.staging.creatubbles.com" for Debug builds
+        - "https://api.creatubbles.com" for Release builds
+	*/
     public string BaseUrl { get { return "https://api.staging.creatubbles.com"; } }
+
+	/*
+        Personal application identifier. Please contact support@creatubbles.com to obtain it.
+    */
     public string AppId { get { return SecretData.AppId; } }
+
+	/*
+        Personal application secret. Please contact support@creatubbles.com to obtain it.
+    */
     public string AppSecret { get { return SecretData.AppSecret; } }
+
+	/*
+        API version string.
+    */
     public string ApiVersion { get { return "v2"; } }
+
+	/*
+        Locale code used for getting localized responses from servers. Example values: “en”, “pl”, “de”.
+        Can be null.
+        See: https://partners.creatubbles.com/api/#locales for details
+    */
     public string Locale { get { return "en"; } }
 }
