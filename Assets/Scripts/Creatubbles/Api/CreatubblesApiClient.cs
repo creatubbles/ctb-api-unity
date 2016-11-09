@@ -43,7 +43,7 @@ namespace Creatubbles.Api
             this.secureStorage = secureStorage;
         }
 
-        // send request methods
+        #region Methods for sending requests and managing user session
 
         // sends log in request and saves the token to ISecureStorage instance if successful
         public IEnumerator SendLogInRequest(OAuthRequest request)
@@ -117,7 +117,9 @@ namespace Creatubbles.Api
             }
         }
 
-        // factory methods
+        #endregion
+
+        #region Requests factory methods
 
         private OAuthRequest CreatePostAuthenticationApplicationTokenRequest()
         {
@@ -255,7 +257,9 @@ namespace Creatubbles.Api
             return new ApiRequestWithEmptyResponseData(request);
         }
 
-        // helper methods
+        #endregion
+
+        #region Helper methods
 
         private string RequestUrl(string path)
         {
@@ -276,5 +280,7 @@ namespace Creatubbles.Api
         {
             request.SetRequestHeader("Accept-Language", configuration.Locale);
         }
+
+        #endregion
     }
 }

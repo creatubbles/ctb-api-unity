@@ -73,6 +73,8 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
+    #region Log in and get profile methods
+
     IEnumerator LogIn(string username, string password)
     {
         OAuthRequest request = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
@@ -110,6 +112,10 @@ public class WebDemoScript: MonoBehaviour
         //            StartCoroutine(NewCreation());
         StartCoroutine(GetCreation("4NKhBZLU"));
     }
+
+    #endregion
+
+    #region Upload Creation methods
 
     IEnumerator NewCreation()
     {
@@ -209,6 +215,8 @@ public class WebDemoScript: MonoBehaviour
 
         Log("Success");
     }
+
+    #endregion
 
     #region Helper methods
 
