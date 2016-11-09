@@ -42,14 +42,29 @@ public class WebDemoScript: MonoBehaviour
     void Start()
     {
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
-//        StartCoroutine(GetLandingUrls());
-        StartCoroutine(LogIn(SecretData.Username, SecretData.Password));
+
+        StartCoroutine(SendRequests());
     }
 	
     // Update is called once per frame
     void Update()
     {
 	
+    }
+
+    IEnumerator SendRequests()
+    {
+        // get landing URLs (public request)
+        yield return GetLandingUrls();
+
+        Log("-------");
+        // login and get user profile (OAuth and private request)
+        yield return LogIn(SecretData.Username, SecretData.Password);
+
+        Log("-------");
+        // upload creation
+        //            StartCoroutine(NewCreation());
+        StartCoroutine(GetCreation("4NKhBZLU"));
     }
 
     IEnumerator GetLandingUrls()
@@ -89,7 +104,7 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
-        StartCoroutine(GetLoggedInUser());
+        yield return GetLoggedInUser();
     }
 
     IEnumerator GetLoggedInUser()
@@ -106,11 +121,13 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
-        // TODO - if data.data == null - report error
-        Log("Data: " + request.data.data.ToString());
+        if (request.data == null || request.data.data == null)
+        {
+            Debug.Log("Error: Invalid or missing data in response");
+            yield break;
+        }
 
-        //            StartCoroutine(NewCreation());
-        StartCoroutine(GetCreation("4NKhBZLU"));
+        Log("Success with data: " + request.data.data.ToString());
     }
 
     #endregion
@@ -136,27 +153,15 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
-        // TODO - if data.data == null - report error
-        Log("Data: " + request.data.data.ToString());
-    }
-
-    IEnumerator GetCreation(string creationId)
-    {
-        ApiRequest<CreationGetResponse> request = creatubbles.CreateGetCreationRequest(creationId);
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendSecureRequest(request);
-
-        if (request.IsAnyError)
+        if (request.data == null || request.data.data == null)
         {
-            HandleApiErrors(request);
+            Debug.Log("Error: Invalid or missing data in response");
             yield break;
         }
 
-        // TODO - if data.data == null - report error
-        Log("Creation: " + request.data.data.ToString());
-        StartCoroutine(PostCreationsUpload(creationId));
+        Log("Success with data: " + request.data.data.ToString());
+
+        // TODO - call PostCreationsUpload
     }
 
     IEnumerator PostCreationsUpload(string creationId)
@@ -173,7 +178,12 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
-        // TODO - if data.data == null - report error
+        if (request.data == null || request.data.data == null)
+        {
+            Debug.Log("Error: Invalid or missing data in response");
+            yield break;
+        }
+
         Log("Creation upload: " + request.data.data.ToString());
         CreationsUploadAttributesDto upload = request.data.data.attributes;
         StartCoroutine(PutUploadFile(upload.url, upload.content_type, upload.ping_url));
@@ -214,6 +224,34 @@ public class WebDemoScript: MonoBehaviour
         }
 
         Log("Success");
+    }
+
+    #endregion
+
+    #region Update existing creation method
+
+    IEnumerator GetCreation(string creationId)
+    {
+        ApiRequest<CreationGetResponse> request = creatubbles.CreateGetCreationRequest(creationId);
+
+        Log("Sending request: " + request.Url);
+
+        yield return creatubbles.SendSecureRequest(request);
+
+        if (request.IsAnyError)
+        {
+            HandleApiErrors(request);
+            yield break;
+        }
+
+        if (request.data == null || request.data.data == null)
+        {
+            Debug.Log("Error: Invalid or missing data in response");
+            yield break;
+        }
+
+        Log("Creation: " + request.data.data.ToString());
+        StartCoroutine(PostCreationsUpload(creationId));
     }
 
     #endregion

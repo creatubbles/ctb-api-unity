@@ -117,6 +117,12 @@ namespace Creatubbles.Api
             }
         }
 
+        // returns true if user token is present in secure storage
+        public bool IsUserLoggedIn()
+        {
+            return secureStorage.HasValue(UserAccessTokenKey);
+        }
+
         #endregion
 
         #region Requests factory methods
