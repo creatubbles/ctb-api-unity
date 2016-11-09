@@ -29,18 +29,24 @@ namespace Creatubbles.Api
     [Serializable]
 	public class NewCreationData
 	{
-        public const int InvalidCreationYear = -1;
-        public const int InvalidCreationMonth = -1;
+        public enum Type
+        {
+            Image = 0,
+            Url = 1,
+            Data = 2
+        }
 
-		public UploadExtension uploadExtension;
+        private const int InvalidCreationYear = -1;
+        private const int InvalidCreationMonth = -1;
 
-		// TODO - data
-		//	public var data: NSData?
-		// TODO - image
-		//	public var image: UIImage?
-		public string url;
+        public readonly byte[] data;
+        public readonly byte[] image;
+        public readonly string url;
+
+        public readonly UploadExtension uploadExtension;
+        public readonly Type dataType;
+
 		public string creationId;
-
 		public string name;
 		public string reflectionText;
 		public string reflectionVideoUrl;
@@ -49,14 +55,12 @@ namespace Creatubbles.Api
         public int creationYear = InvalidCreationYear;
         public int creationMonth = InvalidCreationMonth;
 
-		public CreationDataType dataType;
-
-		public NewCreationData(string url, UploadExtension uploadExtension)
-		{
-			this.url = url;
-			this.dataType = CreationDataType.Url;
-			this.uploadExtension = uploadExtension;
-		}
+        public NewCreationData(byte[] imageData, UploadExtension imageExtension)
+        {
+            this.image = imageData;
+            this.uploadExtension = imageExtension;
+            dataType = Type.Image;
+        }
 
         public bool HasCreationYear
         {
@@ -67,51 +71,5 @@ namespace Creatubbles.Api
         {
             get { return creationMonth != InvalidCreationMonth; }
         }
-		//
-		//		public init(data: NSData, uploadExtension: UploadExtension)
-		//	{
-		//		self.data = data
-		//			self.dataType = .Data
-		//			self.uploadExtension = uploadExtension
-		//	}
-		//		public init(image: UIImage, uploadExtension: UploadExtension)
-		//	{
-		//		self.image = image
-		//			self.dataType = .Image
-		//			self.uploadExtension = uploadExtension
-		//	}
-		//
-		// TODO - remove? probably Realm connected
-		//		init(creationDataEntity: NewCreationDataEntity, url: NSURL)
-		//	{
-		//		self.creationIdentifier = creationDataEntity.creationIdentifier
-		//			self.name = creationDataEntity.name
-		//			self.reflectionText = creationDataEntity.reflectionText
-		//			self.reflectionVideoUrl = creationDataEntity.reflectionVideoUrl
-		//			self.galleryId = creationDataEntity.galleryId
-		//			self.creatorIds = Array<String>()
-		//			self.uploadExtension = creationDataEntity.uploadExtension
-		//
-		//			for creatorId in creationDataEntity.creatorIds
-		//			{
-		//				self.creatorIds!.append(creatorId.creatorIdString!)
-		//			}
-		//				self.creationMonth = creationDataEntity.creationMonth.value
-		//				self.creationYear = creationDataEntity.creationYear.value
-		//				self.dataType = creationDataEntity.dataType
-		//
-		//				if(dataType.rawValue == 0)
-		//				{
-		//					self.image = UIImage(contentsOfFile: url.path!)
-		//				}
-		//				else if(dataType.rawValue == 1)
-		//				{
-		//					self.url = url
-		//				}
-		//				else if(dataType.rawValue == 2)
-		//				{
-		//					self.data = NSData(contentsOfFile: "\(url)")
-		//				}
-		//				}
 	}
 }

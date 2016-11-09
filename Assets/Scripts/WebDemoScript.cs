@@ -62,10 +62,11 @@ public class WebDemoScript: MonoBehaviour
         yield return LogIn(SecretData.Username, SecretData.Password);
 
         Log("-------");
-        // upload creation
-        //            StartCoroutine(NewCreation());
-        StartCoroutine(GetCreation("4NKhBZLU"));
+        // upload new creation
+        yield return UploadCreation("Unity Creation #2");
     }
+
+    #region Get landing URLs
 
     IEnumerator GetLandingUrls()
     {
@@ -88,7 +89,9 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
-    #region Log in and get profile methods
+    #endregion
+
+    #region Log in and get profile
 
     IEnumerator LogIn(string username, string password)
     {
@@ -132,126 +135,40 @@ public class WebDemoScript: MonoBehaviour
 
     #endregion
 
-    #region Upload Creation methods
+    #region Upload Creation
 
-    IEnumerator NewCreation()
+    IEnumerator UploadCreation(string name)
     {
-        NewCreationData creationData = new NewCreationData("http://www.dailybackgrounds.com/wp-content/gallery/sweet-cat/sweet-cat-prayering-image.jpg", UploadExtension.JPG);
-        creationData.name = "Awesome Unity Creation";
-        creationData.creationMonth = 10;
-        creationData.creationYear = 2016;
+        byte[] imageData = texture.EncodeToPNG();
 
-        ApiRequest<CreationGetResponse> request = creatubbles.CreateNewCreationRequest(creationData);
+        NewCreationData creationData = new NewCreationData(imageData, UploadExtension.PNG);
+        creationData.name = name;
+        creationData.creationMonth = DateTime.Now.Month;
+        creationData.creationYear = DateTime.Now.Year;
 
-        Log("Sending request: " + request.Url);
+        CreationUploadSession creationUploadSession = new CreationUploadSession(creationData);
 
-        yield return creatubbles.SendSecureRequest(request);
+        yield return creationUploadSession.Upload(creatubbles);
 
-        if (request.IsAnyError)
+        if (creationUploadSession.IsAnyError)
         {
-            HandleApiErrors(request);
-            yield break;
+            if (creationUploadSession.IsSystemError)
+            {
+                if (creationUploadSession.IsSystemError)
+                {
+                    Log("System error: " + creationUploadSession.SystemError);
+                }
+                else if (creationUploadSession.IsApiError && creationUploadSession.ApiErrors != null && creationUploadSession.ApiErrors.Length > 0)
+                {
+                    // if unauthorized, log user out
+                    Log("API error: " + creationUploadSession.ApiErrors[0].title);
+                }
+                else if (creationUploadSession.IsInternalError)
+                {
+                    Log("Internal erro: " + creationUploadSession.InternalError);
+                }
+            }
         }
-
-        if (request.data == null || request.data.data == null)
-        {
-            Debug.Log("Error: Invalid or missing data in response");
-            yield break;
-        }
-
-        Log("Success with data: " + request.data.data.ToString());
-
-        // TODO - call PostCreationsUpload
-    }
-
-    IEnumerator PostCreationsUpload(string creationId)
-    {
-        ApiRequest<CreationsUploadPostResponse> request = creatubbles.CreatePostCreationUploadRequest(creationId, UploadExtension.PNG);
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendSecureRequest(request);
-
-        if (request.IsAnyError)
-        {
-            HandleApiErrors(request);
-            yield break;
-        }
-
-        if (request.data == null || request.data.data == null)
-        {
-            Debug.Log("Error: Invalid or missing data in response");
-            yield break;
-        }
-
-        Log("Creation upload: " + request.data.data.ToString());
-        CreationsUploadAttributesDto upload = request.data.data.attributes;
-        StartCoroutine(PutUploadFile(upload.url, upload.content_type, upload.ping_url));
-    }
-
-    IEnumerator PutUploadFile(string uploadUrl, string contentType, string pingUrl)
-    {
-        byte[] data = texture.EncodeToPNG();
-        ApiRequestWithEmptyResponseData request = creatubbles.CreatePutUploadFileRequest(uploadUrl, contentType, data);
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendRequest(request);
-
-        if (request.IsAnyError)
-        {
-            HandleApiErrors(request);
-            // TODO - call PutUploadFileUploaded with abortedWithMessage
-            yield break;
-        }
-
-        Log("Success");
-        StartCoroutine(PutUploadFileUploaded(pingUrl));
-    }
-
-    IEnumerator PutUploadFileUploaded(string pingUrl)
-    {
-        ApiRequestWithEmptyResponseData request = creatubbles.CreatePutUploadFinishedRequest(pingUrl);
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendSecureRequest(request);
-
-        if (request.IsAnyError)
-        {
-            HandleApiErrors(request);
-            yield break;
-        }
-
-        Log("Success");
-    }
-
-    #endregion
-
-    #region Update existing creation method
-
-    IEnumerator GetCreation(string creationId)
-    {
-        ApiRequest<CreationGetResponse> request = creatubbles.CreateGetCreationRequest(creationId);
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendSecureRequest(request);
-
-        if (request.IsAnyError)
-        {
-            HandleApiErrors(request);
-            yield break;
-        }
-
-        if (request.data == null || request.data.data == null)
-        {
-            Debug.Log("Error: Invalid or missing data in response");
-            yield break;
-        }
-
-        Log("Creation: " + request.data.data.ToString());
-        StartCoroutine(PostCreationsUpload(creationId));
     }
 
     #endregion
@@ -268,10 +185,6 @@ public class WebDemoScript: MonoBehaviour
         {
             Log("API error: " + request.oAuthError.error_description);
         }
-        else
-        {
-            Log("Something went wrong");
-        }
     }
 
     private void HandleApiErrors<T>(ApiRequest<T> request)
@@ -282,11 +195,8 @@ public class WebDemoScript: MonoBehaviour
         }
         else if (request.IsApiError && request.apiErrors != null && request.apiErrors.Length > 0)
         {
+            // if unauthorized, log user out
             Log("API error: " + request.apiErrors[0].title);
-        }
-        else
-        {
-            Log("Something went wrong");
         }
     }
 
