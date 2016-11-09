@@ -242,7 +242,6 @@ namespace Creatubbles.Api
             return new ApiRequestWithEmptyResponseData(request);
         }
 
-        // TODO - abortedWithMessage - argument included when upload fails; include the body returned by the failed upload attempt or ‘user’ in case the user aborted the upload
         // API doc: https://stateoftheart.creatubbles.com/api/#update-creation-upload
         public ApiRequestWithEmptyResponseData CreatePutUploadFinishedRequest(string pingUrl, string abortedWithMessage = null)
         {

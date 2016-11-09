@@ -39,6 +39,20 @@ namespace Creatubbles.Api
         // data from response body
         public T data;
 
+        // returns response body as string or empty string if response had no body or DownloadHandler was not provided
+        public string RawResponseBody
+        {
+            get
+            {
+                if (webRequest.downloadHandler == null || webRequest.downloadHandler.text == null)
+                {
+                    return "";
+                }
+
+                return webRequest.downloadHandler.text;
+            }
+        }
+
         // true when Unity encountered a system error like no internet connection, socket errors, errors resolving DNS entries, or the redirect limit being exceeded
         // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html
         public bool IsSystemError { get { return webRequest.isError; } }
@@ -47,7 +61,7 @@ namespace Creatubbles.Api
         public string SystemError { get { return webRequest.error; } }
 
 		// true when request ends with an error like HTTP status 4xx or 5xx
-        public bool IsApiError { get { return !IsNonFailureHttpStatus; } }
+        public bool IsApiError { get { return webRequest.isDone && !IsNonFailureHttpStatus; } }
 
         // contains the errors returned by the API
         public ApiError[] apiErrors;
@@ -58,13 +72,18 @@ namespace Creatubbles.Api
         // URL of the request
         public string Url { get { return webRequest.url; } }
 
+        public bool IsAborted { get; private set; }
+
         public ApiRequest(UnityWebRequest webRequest)
         {
             this.webRequest = webRequest;
+            this.IsAborted = false;
         }
 
         internal IEnumerator Send()
         {
+            IsAborted = false;
+
             yield return webRequest.Send();
 
             // can't process response without download handler
@@ -89,6 +108,7 @@ namespace Creatubbles.Api
         public void Abort()
         {
             webRequest.Abort();
+            IsAborted = true;
         }
 
         public void SetRequestHeader(string name, string value)

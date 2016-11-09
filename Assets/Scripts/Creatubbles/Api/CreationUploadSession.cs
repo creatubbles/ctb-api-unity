@@ -29,6 +29,8 @@ using UnityEngine;
 namespace Creatubbles.Api
 {
     // TODO - add progress reporting
+    // performs series of requests allocating Creation, uploading file, updating Creation and notifying backend when operation finishes
+    // see https://stateoftheart.creatubbles.com/api/#creation-upload for details
     public class CreationUploadSession
     {
         private const string InternalErrorMissingOrInvalidResponseData = "Invalid or missing data in reponse body.";
@@ -64,11 +66,19 @@ namespace Creatubbles.Api
         public CreationUploadSession(NewCreationData creationData)
         {
             this.creationData = creationData;
+            this.IsSystemError = false;
+            this.IsApiError = false;
+            this.IsInternalError = false;
+            this.IsDone = false;
         }
             
         // triggers series of requests forming new Creation entity, uploading file, updating Creation with uploaded file's URL and notifying server when upload is finished
         public IEnumerator Upload(CreatubblesApiClient creatubbles)
         {
+            IsSystemError = false;
+            IsApiError = false;
+            IsInternalError = false;
+
             IsDone = false;
 
             string creationId = creationData.creationId;
@@ -128,29 +138,34 @@ namespace Creatubbles.Api
             CreationsUploadAttributesDto upload = prepareUploadRequest.data.data.attributes;
 
             // perform upload
-            // TODO - different request for other data types
             ApiRequestWithEmptyResponseData uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
 
             Debug.Log("Sending request: " + uploadRequest.Url);
 
             yield return creatubbles.SendRequest(uploadRequest);
 
+            if (uploadRequest.IsAborted)
+            {
+                yield return PutUploadFileFinished(creatubbles, upload.ping_url, "user");
+                yield break;
+            }
+
             if (uploadRequest.IsAnyError)
             {
                 FinishWithErrors(uploadRequest);
-                // TODO - call PutUploadFileUploaded with abortedWithMessage
+                yield return PutUploadFileFinished(creatubbles, upload.ping_url, uploadRequest.RawResponseBody);
                 yield break;
             }
 
             Debug.Log("Success");
-            yield return PutUploadFileUploaded(creatubbles, upload.ping_url);
+            yield return PutUploadFileFinished(creatubbles, upload.ping_url);
 
             IsDone = true;
         }
 
         #region Helper methods
 
-        private IEnumerator PutUploadFileUploaded(CreatubblesApiClient creatubbles, string pingUrl, string abortedWithMessage = null)
+        private IEnumerator PutUploadFileFinished(CreatubblesApiClient creatubbles, string pingUrl, string abortedWithMessage = null)
         {
             ApiRequestWithEmptyResponseData request = creatubbles.CreatePutUploadFinishedRequest(pingUrl);
 
