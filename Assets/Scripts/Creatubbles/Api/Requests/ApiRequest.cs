@@ -63,7 +63,7 @@ namespace Creatubbles.Api
             this.webRequest = webRequest;
         }
 
-        public IEnumerator Send()
+        internal IEnumerator Send()
         {
             yield return webRequest.Send();
 
@@ -89,6 +89,11 @@ namespace Creatubbles.Api
         public void Abort()
         {
             webRequest.Abort();
+        }
+
+        public void SetRequestHeader(string name, string value)
+        {
+            webRequest.SetRequestHeader(name, value);
         }
 
         private static DeserializedType DeserializeJson<DeserializedType>(string json)

@@ -360,7 +360,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textControl: {fileID: 1795094407}
-  texture: {fileID: 2800000, guid: 574ef1899588249f3a6fe5ccbb7764d7, type: 3}
+  texture: {fileID: 2800000, guid: 4f1258e767e23456a89349d3794da871, type: 3}
 --- !u!4 &1773638996
 Transform:
   m_ObjectHideFlags: 0

@@ -91,6 +91,11 @@ namespace Creatubbles.Api
             webRequest.Abort();
         }
 
+        public void SetRequestHeader(string name, string value)
+        {
+            webRequest.SetRequestHeader(name, value);
+        }
+
         private static DeserializedType DeserializeJson<DeserializedType>(string json)
         {
             return JsonUtility.FromJson<DeserializedType>(json);

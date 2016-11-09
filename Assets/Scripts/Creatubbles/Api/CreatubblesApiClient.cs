@@ -25,13 +25,17 @@
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using System.Collections;
 
 namespace Creatubbles.Api
 {
     public class CreatubblesApiClient
     {
+        private const string AppAccessTokenKey = "ctb_app_access_token";
+        private const string UserAccessTokenKey = "ctb_user_access_token";
+
         private IApiConfiguration configuration;
-        public ISecureStorage secureStorage; // TODO - eventually make it private
+        private ISecureStorage secureStorage;
 
         public CreatubblesApiClient(IApiConfiguration configuration, ISecureStorage secureStorage)
         {
@@ -39,7 +43,83 @@ namespace Creatubbles.Api
             this.secureStorage = secureStorage;
         }
 
-        public OAuthRequest CreatePostAuthenticationApplicationTokenRequest()
+        // send request methods
+
+        // sends log in request and saves the token to ISecureStorage instance if successful
+        public IEnumerator SendLogInRequest(OAuthRequest request)
+        {
+            SetAcceptLanguageHeader(request);
+
+            yield return request.Send();
+
+            if (request.IsAnyError || request.data == null)
+            {
+                yield break;
+            }
+
+            Debug.Log("logged in and saved token: " + request.data.access_token);
+            secureStorage.SaveValue(UserAccessTokenKey, request.data.access_token);
+        }
+
+        // attempts to send request with user token if it's present in ISecureStorage instance
+        public IEnumerator SendSecureRequest<T>(ApiRequest<T> request)
+        {
+            string accessToken = null;
+            if (secureStorage.HasValue(UserAccessTokenKey))
+            {
+                accessToken = secureStorage.LoadValue(UserAccessTokenKey);
+                SetAuthorizationHeaderBearerToken<T>(request, accessToken);
+                SetAcceptLanguageHeader(request);
+            }
+
+            yield return request.Send();
+        }
+
+        // attempts to send request with application token if it's present in ISecureStorage instance
+        public IEnumerator SendPublicRequest<T>(ApiRequest<T> request)
+        {
+            string accessToken = null;
+            if (secureStorage.HasValue(AppAccessTokenKey))
+            {
+                accessToken = secureStorage.LoadValue(AppAccessTokenKey);
+            }
+            else
+            {
+                OAuthRequest tokenRequest = CreatePostAuthenticationApplicationTokenRequest();
+
+                yield return tokenRequest.Send();
+
+                if (!tokenRequest.IsAnyError)
+                {
+                    accessToken = tokenRequest.data.access_token;
+                    secureStorage.SaveValue(AppAccessTokenKey, accessToken);
+                }
+            }
+
+            SetAuthorizationHeaderBearerToken<T>(request, accessToken);
+            SetAcceptLanguageHeader(request);
+
+            yield return request.Send();
+        }
+
+        // sends unmodified request
+        public IEnumerator SendRequest<T>(ApiRequest<T> request)
+        {
+            yield return request.Send();
+        }
+
+        // removes user token from secure storage
+        public void LogOut()
+        {
+            if (secureStorage.HasValue(UserAccessTokenKey))
+            {
+                secureStorage.DeleteValue(UserAccessTokenKey);
+            }
+        }
+
+        // factory methods
+
+        private OAuthRequest CreatePostAuthenticationApplicationTokenRequest()
         {
             string url = RequestUrl("/oauth/token");
             WWWForm data = new WWWForm();
@@ -48,7 +128,6 @@ namespace Creatubbles.Api
             data.AddField("client_secret", configuration.AppSecret);
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return new OAuthRequest(request);
@@ -65,35 +144,31 @@ namespace Creatubbles.Api
             data.AddField("password", password);
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return new OAuthRequest(request);
         }
 
-        public ApiRequest<LandingUrlsResponse> CreateGetLandingUrlsRequest(string applicationToken)
+        public ApiRequest<LandingUrlsResponse> CreateGetLandingUrlsRequest()
         {
             string url = RequestUrl("/landing_urls");
             UnityWebRequest request = UnityWebRequest.Get(url);
-            SetAuthorizationHeaderBearerToken(request, applicationToken);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return new ApiRequest<LandingUrlsResponse>(request);
         }
 
-        public UnityWebRequest CreateGetLoggedInUserRequest(string userToken)
+        public ApiRequest<LoggedInUserResponse> CreateGetLoggedInUserRequest()
         {
             string url = RequestUrl("/users/me");
             UnityWebRequest request = UnityWebRequest.Get(url);
-            SetAuthorizationHeaderBearerToken(request, userToken);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+
+            return new ApiRequest<LoggedInUserResponse>(request);
         }
 
-        public UnityWebRequest CreateNewCreationRequest(string userToken, NewCreationData creationData)
+        public ApiRequest<CreationGetResponse> CreateNewCreationRequest(NewCreationData creationData)
         {
             string url = RequestUrl("/creations");
             WWWForm data = new WWWForm();
@@ -124,51 +199,44 @@ namespace Creatubbles.Api
             }
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
-            SetAuthorizationHeaderBearerToken(request, userToken);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new ApiRequest<CreationGetResponse>(request);
         }
 
-        public UnityWebRequest CreateGetCreationRequest(string userToken, string creationId)
+        public ApiRequest<CreationGetResponse> CreateGetCreationRequest(string creationId)
         {
             string url = RequestUrl("/creations/" + creationId);
             UnityWebRequest request = UnityWebRequest.Get(url);
-            SetAuthorizationHeaderBearerToken(request, userToken);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new ApiRequest<CreationGetResponse>(request);
         }
 
-        public UnityWebRequest CreatePostCreationUploadRequest(string userToken, string creationId, UploadExtension extension = UploadExtension.JPG)
+        public ApiRequest<CreationsUploadPostResponse> CreatePostCreationUploadRequest(string creationId, UploadExtension extension = UploadExtension.JPG)
         {
             string url = RequestUrl("/creations/" + creationId + "/uploads");
             WWWForm data = new WWWForm();
             data.AddField("extension", extension.StringValue());
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
-            SetAuthorizationHeaderBearerToken(request, userToken);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new ApiRequest<CreationsUploadPostResponse>(request);
         }
 
-        public UnityWebRequest CreatePutUploadFileRequest(string userToken, string url, string contentType, byte[] data)
+        public ApiRequestWithEmptyResponseData CreatePutUploadFileRequest(string url, string contentType, byte[] data)
         {
             UnityWebRequest request = UnityWebRequest.Put(url, data);
-            SetAcceptLanguageHeader(request);
             request.SetRequestHeader("Content-Type", contentType);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new ApiRequestWithEmptyResponseData(request);
         }
 
         // TODO - abortedWithMessage - argument included when upload fails; include the body returned by the failed upload attempt or ‘user’ in case the user aborted the upload
         // API doc: https://stateoftheart.creatubbles.com/api/#update-creation-upload
-        public UnityWebRequest CreatePutUploadFinishedRequest(string userToken, string pingUrl, string abortedWithMessage = null)
+        public ApiRequestWithEmptyResponseData CreatePutUploadFinishedRequest(string pingUrl, string abortedWithMessage = null)
         {
             UnityWebRequest request;
             if (abortedWithMessage != null)
@@ -182,11 +250,9 @@ namespace Creatubbles.Api
                 request = new UnityWebRequest(pingUrl);
             }
             request.method = UnityWebRequest.kHttpVerbPUT;
-            SetAuthorizationHeaderBearerToken(request, userToken);
-            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new ApiRequestWithEmptyResponseData(request);
         }
 
         // helper methods
@@ -196,12 +262,17 @@ namespace Creatubbles.Api
             return configuration.BaseUrl + "/" + configuration.ApiVersion + path;
         }
 
-        private void SetAuthorizationHeaderBearerToken(UnityWebRequest request, string token)
+        private void SetAuthorizationHeaderBearerToken<T>(ApiRequest<T> request, string accessToken)
         {
-            request.SetRequestHeader("Authorization", "Bearer " + token);
+            request.SetRequestHeader("Authorization", "Bearer " + accessToken);
         }
 
-        private void SetAcceptLanguageHeader(UnityWebRequest request)
+        private void SetAcceptLanguageHeader<T>(ApiRequest<T>  request)
+        {
+            request.SetRequestHeader("Accept-Language", configuration.Locale);
+        }
+
+        private void SetAcceptLanguageHeader(OAuthRequest request)
         {
             request.SetRequestHeader("Accept-Language", configuration.Locale);
         }

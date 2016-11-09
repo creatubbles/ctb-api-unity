@@ -38,9 +38,6 @@ public class WebDemoScript: MonoBehaviour
 
     private CreatubblesApiClient creatubbles;
 
-    private const string AppAccessTokenKey = "ctb_app_access_token";
-    private const string UserAccessTokenKey = "ctb_user_access_token";
-
     // Use this for initialization
     void Start()
     {
@@ -55,35 +52,13 @@ public class WebDemoScript: MonoBehaviour
 	
     }
 
-    // TODO - add SendPublicRequest to CreatubblesApiClient, which will handle savind and loading token from storage, performing OAuth request and finally performing the actual public API request
     IEnumerator GetLandingUrls()
     {
-        // TODO - check if application token is in secure storage
-
-        // TODO - if no application token in storage, then get token from backend
-        // get application token
-        OAuthRequest applicationTokenRequest = creatubbles.CreatePostAuthenticationApplicationTokenRequest();
-
-        Log("Sending request: " + applicationTokenRequest.Url);
-
-        yield return applicationTokenRequest.Send();
-
-        if (applicationTokenRequest.IsAnyError)
-        {
-            HandleOAuthError(applicationTokenRequest);
-            yield break;
-        }
-
-        string accessToken = applicationTokenRequest.data.access_token;
-
-        // get landing URLs with application token
-        ApiRequest<LandingUrlsResponse> request = creatubbles.CreateGetLandingUrlsRequest(accessToken);
-
-        // TODO - save token to secure storage
+        ApiRequest<LandingUrlsResponse> request = creatubbles.CreateGetLandingUrlsRequest();
 
         Log("Sending request: " + request.Url);
 
-        yield return request.Send();
+        yield return creatubbles.SendPublicRequest(request);
 
         if (request.IsAnyError)
         {
@@ -98,14 +73,13 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
-    // TODO - add SendLogInRequest to CreatubblesApiClient - should save user token to storage
     IEnumerator LogIn(string username, string password)
     {
         OAuthRequest request = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
 
         Log("Sending request: " + request.Url);
 
-        yield return request.Send();
+        yield return creatubbles.SendLogInRequest(request);
 
         if (request.IsAnyError)
         {
@@ -113,159 +87,130 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
-        // TODO - move to CreatubblesApiClient
-        creatubbles.secureStorage.SaveValue(UserAccessTokenKey, request.data.access_token);
-
         StartCoroutine(GetLoggedInUser());
     }
 
-    // TODO - add SendSecureRequest to CreatubblesApiClient - should try to read user token from storage
     IEnumerator GetLoggedInUser()
     {
-        string token = creatubbles.secureStorage.LoadValue(UserAccessTokenKey);
-        UnityWebRequest www = creatubbles.CreateGetLoggedInUserRequest(token);
+        ApiRequest<LoggedInUserResponse> request = creatubbles.CreateGetLoggedInUserRequest();
 
-        Log("Sending request: " + www.url);
+        Log("Sending request: " + request.Url);
 
-        yield return www.Send();
+        yield return creatubbles.SendSecureRequest(request);
 
-        if (www.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + www.error);
+            HandleApiErrors(request);
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + www.responseCode + ", body: " + www.downloadHandler.text);
 
-            LoggedInUserResponse data = JsonUtility.FromJson<LoggedInUserResponse>(www.downloadHandler.text);
+        // TODO - if data.data == null - report error
+        Log("Data: " + request.data.data.ToString());
 
-            Log("Data: " + data.data.ToString());
-
-//            StartCoroutine(NewCreation(userToken));
-            StartCoroutine(GetCreation("4NKhBZLU"));
-        }
+        //            StartCoroutine(NewCreation());
+        StartCoroutine(GetCreation("4NKhBZLU"));
     }
 
-    IEnumerator NewCreation(string userToken)
+    IEnumerator NewCreation()
     {
         NewCreationData creationData = new NewCreationData("http://www.dailybackgrounds.com/wp-content/gallery/sweet-cat/sweet-cat-prayering-image.jpg", UploadExtension.JPG);
         creationData.name = "Awesome Unity Creation";
         creationData.creationMonth = 10;
         creationData.creationYear = 2016;
 
-        UnityWebRequest www = creatubbles.CreateNewCreationRequest(userToken, creationData);
+        ApiRequest<CreationGetResponse> request = creatubbles.CreateNewCreationRequest(creationData);
 
-        Log("Sending request: " + www.url);
+        Log("Sending request: " + request.Url);
 
-        yield return www.Send();
+        yield return creatubbles.SendSecureRequest(request);
 
-        if (www.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + www.error);
+            HandleApiErrors(request);
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + www.responseCode + ", body: " + www.downloadHandler.text);
 
-            CreationGetResponse data = JsonUtility.FromJson<CreationGetResponse>(www.downloadHandler.text);
-            Log("Data: " + data.data.ToString());
-        }
+        // TODO - if data.data == null - report error
+        Log("Data: " + request.data.data.ToString());
     }
 
     IEnumerator GetCreation(string creationId)
     {
-        string token = creatubbles.secureStorage.LoadValue(UserAccessTokenKey);
-        UnityWebRequest www = creatubbles.CreateGetCreationRequest(token, creationId);
+        ApiRequest<CreationGetResponse> request = creatubbles.CreateGetCreationRequest(creationId);
 
-        Log("Sending request: " + www.url);
+        Log("Sending request: " + request.Url);
 
-        yield return www.Send();
+        yield return creatubbles.SendSecureRequest(request);
 
-        if (www.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + www.error);
+            HandleApiErrors(request);
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + www.responseCode + ", body: " + www.downloadHandler.text);
 
-            CreationGetResponse data = JsonUtility.FromJson<CreationGetResponse>(www.downloadHandler.text);
-            Log("Creation: " + data.data.ToString());
-
-            StartCoroutine(PostCreationsUpload(creationId));
-        }
+        // TODO - if data.data == null - report error
+        Log("Creation: " + request.data.data.ToString());
+        StartCoroutine(PostCreationsUpload(creationId));
     }
 
-    // TODO - add extension?
     IEnumerator PostCreationsUpload(string creationId)
     {
-        string token = creatubbles.secureStorage.LoadValue(UserAccessTokenKey);
-        UnityWebRequest www = creatubbles.CreatePostCreationUploadRequest(token, creationId, UploadExtension.PNG);
+        ApiRequest<CreationsUploadPostResponse> request = creatubbles.CreatePostCreationUploadRequest(creationId, UploadExtension.PNG);
 
-        Log("Sending request: " + www.url);
+        Log("Sending request: " + request.Url);
 
-        yield return www.Send();
+        yield return creatubbles.SendSecureRequest(request);
 
-        if (www.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + www.error);
+            HandleApiErrors(request);
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + www.responseCode + ", body: " + www.downloadHandler.text);
 
-            CreationsUploadPostResponse data = JsonUtility.FromJson<CreationsUploadPostResponse>(www.downloadHandler.text);
-            Log("Creation upload: " + data.data.ToString());
-
-            CreationsUploadAttributesDto upload = data.data.attributes;
-            StartCoroutine(PutUploadFile(upload.url, upload.content_type, upload.ping_url));
-        }
+        // TODO - if data.data == null - report error
+        Log("Creation upload: " + request.data.data.ToString());
+        CreationsUploadAttributesDto upload = request.data.data.attributes;
+        StartCoroutine(PutUploadFile(upload.url, upload.content_type, upload.ping_url));
     }
 
     IEnumerator PutUploadFile(string uploadUrl, string contentType, string pingUrl)
     {
-        string token = creatubbles.secureStorage.LoadValue(UserAccessTokenKey);
         byte[] data = texture.EncodeToPNG();
-        UnityWebRequest request = creatubbles.CreatePutUploadFileRequest(token, uploadUrl, contentType, data);
+        ApiRequestWithEmptyResponseData request = creatubbles.CreatePutUploadFileRequest(uploadUrl, contentType, data);
 
-        Log("Sending request: " + request.url);
+        Log("Sending request: " + request.Url);
 
-        yield return request.Send();
+        yield return creatubbles.SendRequest(request);
 
-        // TODO - how to check progress? upload handler needs to be available on the outside to be checked in update?
-
-        if (request.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + request.error);
+            HandleApiErrors(request);
+            // TODO - call PutUploadFileUploaded with abortedWithMessage
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + request.responseCode + ", body: " + request.downloadHandler.text);
 
-            StartCoroutine(PutUploadFileUploaded(pingUrl));
-        }
+        Log("Success");
+        StartCoroutine(PutUploadFileUploaded(pingUrl));
     }
 
     IEnumerator PutUploadFileUploaded(string pingUrl)
     {
-        string token = creatubbles.secureStorage.LoadValue(UserAccessTokenKey);
-        UnityWebRequest request = creatubbles.CreatePutUploadFinishedRequest(token, pingUrl);
+        ApiRequestWithEmptyResponseData request = creatubbles.CreatePutUploadFinishedRequest(pingUrl);
 
-        Log("Sending request: " + request.url);
+        Log("Sending request: " + request.Url);
 
-        yield return request.Send();
+        yield return creatubbles.SendSecureRequest(request);
 
-        if (request.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + request.error);
+            HandleApiErrors(request);
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + request.responseCode + ", body: " + request.downloadHandler.text);
-        }
+
+        Log("Success");
     }
 
-    // helper methods
+    #region Helper methods
 
     private void HandleOAuthError(OAuthRequest request)
     {
@@ -304,4 +249,6 @@ public class WebDemoScript: MonoBehaviour
         textControl.text += "\n\n" + text;
         Debug.Log(text);
     }
+
+    #endregion
 }
