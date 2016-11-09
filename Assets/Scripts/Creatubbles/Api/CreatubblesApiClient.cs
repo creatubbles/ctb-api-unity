@@ -54,7 +54,7 @@ namespace Creatubbles.Api
             return new OAuthRequest(request);
         }
 
-        public UnityWebRequest CreatePostAuthenticationUserTokenRequest(string username, string password)
+        public OAuthRequest CreatePostAuthenticationUserTokenRequest(string username, string password)
         {
             string url = RequestUrl("/oauth/token");
             WWWForm data = new WWWForm();
@@ -68,7 +68,7 @@ namespace Creatubbles.Api
             SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new OAuthRequest(request);
         }
 
         public ApiRequest<LandingUrlsResponse> CreateGetLandingUrlsRequest(string applicationToken)

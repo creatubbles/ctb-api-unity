@@ -45,8 +45,8 @@ public class WebDemoScript: MonoBehaviour
     void Start()
     {
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
-        StartCoroutine(GetLandingUrls());
-//        StartCoroutine(LogIn(SecretData.Username, SecretData.Password));
+//        StartCoroutine(GetLandingUrls());
+        StartCoroutine(LogIn(SecretData.Username, SecretData.Password));
     }
 	
     // Update is called once per frame
@@ -98,31 +98,28 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
+    // TODO - add SendLogInRequest to CreatubblesApiClient - should save user token to storage
     IEnumerator LogIn(string username, string password)
     {
-        UnityWebRequest www = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
+        OAuthRequest request = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
 
-        Log("Sending request: " + www.url);
+        Log("Sending request: " + request.Url);
 
-        yield return www.Send();
+        yield return request.Send();
 
-        if (www.isError)
+        if (request.IsAnyError)
         {
-            Log("Request error: " + www.error);
+            HandleOAuthError(request);
+            yield break;
         }
-        else
-        {
-            Log("[Response] code: " + www.responseCode + ", body: " + www.downloadHandler.text);
 
-            OAuthTokenReponse data = JsonUtility.FromJson<OAuthTokenReponse>(www.downloadHandler.text);
+        // TODO - move to CreatubblesApiClient
+        creatubbles.secureStorage.SaveValue(UserAccessTokenKey, request.data.access_token);
 
-            // TODO - move to client
-            creatubbles.secureStorage.SaveValue(UserAccessTokenKey, data.access_token);
-
-            StartCoroutine(GetLoggedInUser());
-        }
+        StartCoroutine(GetLoggedInUser());
     }
 
+    // TODO - add SendSecureRequest to CreatubblesApiClient - should try to read user token from storage
     IEnumerator GetLoggedInUser()
     {
         string token = creatubbles.secureStorage.LoadValue(UserAccessTokenKey);
@@ -267,7 +264,7 @@ public class WebDemoScript: MonoBehaviour
             Log("[Response] code: " + request.responseCode + ", body: " + request.downloadHandler.text);
         }
     }
-        
+
     // helper methods
 
     private void HandleOAuthError(OAuthRequest request)
