@@ -29,6 +29,11 @@ using System.Collections;
 
 namespace Creatubbles.Api
 {
+    /*
+     * Note! This storage class is not really a secure means of storing sensitive data and it should ONLY be used for development and testing.
+     *       For production an encrypted storage should be used instead.
+     *       TODO - implementation of actual secure encrypted persistent storage is in progress
+     */
     public class InMemoryStorage: ISecureStorage
     {
         private static Dictionary<string, string> store = new Dictionary<string, string>();

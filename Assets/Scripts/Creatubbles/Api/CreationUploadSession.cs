@@ -66,7 +66,7 @@ namespace Creatubbles.Api
             this.creationData = creationData;
         }
             
-        // triggers series of requests forming new Creation entity, uploading file and 
+        // triggers series of requests forming new Creation entity, uploading file, updating Creation with uploaded file's URL and notifying server when upload is finished
         public IEnumerator Upload(CreatubblesApiClient creatubbles)
         {
             IsDone = false;

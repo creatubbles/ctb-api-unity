@@ -41,6 +41,9 @@ public class WebDemoScript: MonoBehaviour
     // Use this for initialization
     void Start()
     {
+        // configuration - in order for the API client to function properly it requires a simple configuration class containing information such as base URL, app ID and secret
+        //                 such class must be implementing IApiConfiguration inteface (see CreatubblesConfiguration for example and details)
+        // secureStorage - currently only InMemoryStorage is available but SDK user can provide his / her own implementation until a more secure option is available as part of the SDK
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
 
         StartCoroutine(SendRequests());
@@ -52,6 +55,7 @@ public class WebDemoScript: MonoBehaviour
 	
     }
 
+    // example of getting landing URLs, logging in and uploading a creation
     IEnumerator SendRequests()
     {
         // get landing URLs (public request)
@@ -66,7 +70,7 @@ public class WebDemoScript: MonoBehaviour
         yield return UploadCreation("Unity Creation #2");
     }
 
-    #region Get landing URLs
+    #region API related methods
 
     IEnumerator GetLandingUrls()
     {
@@ -74,6 +78,7 @@ public class WebDemoScript: MonoBehaviour
 
         Log("Sending request: " + request.Url);
 
+        // getting landing URLs is a public request
         yield return creatubbles.SendPublicRequest(request);
 
         if (request.IsAnyError)
@@ -82,6 +87,7 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
+        // do something useful with the result
         LandingUrlsResponse response = request.data;
         if (response != null && response.data != null && response.data.Length > 0)
         {
@@ -89,10 +95,8 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
-    #endregion
-
-    #region Log in and get profile
-
+    // creates and sends a log in request, if successful saves the returned token in ISecureStorage instance
+    // after log in request is complete user profile is fetched from the API
     IEnumerator LogIn(string username, string password)
     {
         OAuthRequest request = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
@@ -110,6 +114,44 @@ public class WebDemoScript: MonoBehaviour
         yield return GetLoggedInUser();
     }
 
+    // creates a new Creation entity and uploads an image with it
+    // TODO - upload progress reporting and abort features are work in progress
+    IEnumerator UploadCreation(string name)
+    {
+        byte[] imageData = texture.EncodeToPNG();
+
+        NewCreationData creationData = new NewCreationData(imageData, UploadExtension.PNG);
+        creationData.name = name;
+        creationData.creationMonth = DateTime.Now.Month;
+        creationData.creationYear = DateTime.Now.Year;
+
+        CreationUploadSession creationUploadSession = new CreationUploadSession(creationData);
+
+        yield return creationUploadSession.Upload(creatubbles);
+
+        if (creationUploadSession.IsAnyError)
+        {
+            if (creationUploadSession.IsSystemError)
+            {
+                Log("System error: " + creationUploadSession.SystemError);
+            }
+            else if (creationUploadSession.IsApiError && creationUploadSession.ApiErrors != null && creationUploadSession.ApiErrors.Length > 0)
+            {
+                // if unauthorized, log user out
+                Log("API error: " + creationUploadSession.ApiErrors[0].title);
+            }
+            else if (creationUploadSession.IsInternalError)
+            {
+                Log("Internal erro: " + creationUploadSession.InternalError);
+            }
+        }
+    }
+
+    #endregion
+
+    #region Helper methods
+
+    // creates and sends request for fetching current user data (user must be already logged in, otherwise request will fail with 'unauthorized' error)
     IEnumerator GetLoggedInUser()
     {
         ApiRequest<LoggedInUserResponse> request = creatubbles.CreateGetLoggedInUserRequest();
@@ -132,48 +174,6 @@ public class WebDemoScript: MonoBehaviour
 
         Log("Success with data: " + request.data.data.ToString());
     }
-
-    #endregion
-
-    #region Upload Creation
-
-    IEnumerator UploadCreation(string name)
-    {
-        byte[] imageData = texture.EncodeToPNG();
-
-        NewCreationData creationData = new NewCreationData(imageData, UploadExtension.PNG);
-        creationData.name = name;
-        creationData.creationMonth = DateTime.Now.Month;
-        creationData.creationYear = DateTime.Now.Year;
-
-        CreationUploadSession creationUploadSession = new CreationUploadSession(creationData);
-
-        yield return creationUploadSession.Upload(creatubbles);
-
-        if (creationUploadSession.IsAnyError)
-        {
-            if (creationUploadSession.IsSystemError)
-            {
-                if (creationUploadSession.IsSystemError)
-                {
-                    Log("System error: " + creationUploadSession.SystemError);
-                }
-                else if (creationUploadSession.IsApiError && creationUploadSession.ApiErrors != null && creationUploadSession.ApiErrors.Length > 0)
-                {
-                    // if unauthorized, log user out
-                    Log("API error: " + creationUploadSession.ApiErrors[0].title);
-                }
-                else if (creationUploadSession.IsInternalError)
-                {
-                    Log("Internal erro: " + creationUploadSession.InternalError);
-                }
-            }
-        }
-    }
-
-    #endregion
-
-    #region Helper methods
 
     private void HandleOAuthError(OAuthRequest request)
     {
