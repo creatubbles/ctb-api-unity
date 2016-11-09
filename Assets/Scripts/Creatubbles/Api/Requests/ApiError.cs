@@ -57,6 +57,7 @@ namespace Creatubbles.Api
         {
             this.status = status;
             this.code = code;
+            // human readable, respects Accept-Language header
             this.title = title;
             this.source = source;
             this.detail = detail;

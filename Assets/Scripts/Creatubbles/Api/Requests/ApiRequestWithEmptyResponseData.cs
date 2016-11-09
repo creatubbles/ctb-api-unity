@@ -1,5 +1,5 @@
 ﻿//
-//  ApiRequestWithNoResponseData.cs
+//  ApiRequestWithEmptyResponseData.cs
 //  CreatubblesApiClient
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.

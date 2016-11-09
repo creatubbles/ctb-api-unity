@@ -39,7 +39,7 @@ namespace Creatubbles.Api
             this.secureStorage = secureStorage;
         }
 
-        public UnityWebRequest CreatePostAuthenticationApplicationTokenRequest()
+        public OAuthRequest CreatePostAuthenticationApplicationTokenRequest()
         {
             string url = RequestUrl("/oauth/token");
             WWWForm data = new WWWForm();
@@ -48,9 +48,10 @@ namespace Creatubbles.Api
             data.AddField("client_secret", configuration.AppSecret);
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return request;
+            return new OAuthRequest(request);
         }
 
         public UnityWebRequest CreatePostAuthenticationUserTokenRequest(string username, string password)
@@ -64,6 +65,7 @@ namespace Creatubbles.Api
             data.AddField("password", password);
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return request;
@@ -74,6 +76,7 @@ namespace Creatubbles.Api
             string url = RequestUrl("/landing_urls");
             UnityWebRequest request = UnityWebRequest.Get(url);
             SetAuthorizationHeaderBearerToken(request, applicationToken);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return new ApiRequest<LandingUrlsResponse>(request);
@@ -84,6 +87,7 @@ namespace Creatubbles.Api
             string url = RequestUrl("/users/me");
             UnityWebRequest request = UnityWebRequest.Get(url);
             SetAuthorizationHeaderBearerToken(request, userToken);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return request;
@@ -121,6 +125,7 @@ namespace Creatubbles.Api
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
             SetAuthorizationHeaderBearerToken(request, userToken);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return request;
@@ -131,6 +136,7 @@ namespace Creatubbles.Api
             string url = RequestUrl("/creations/" + creationId);
             UnityWebRequest request = UnityWebRequest.Get(url);
             SetAuthorizationHeaderBearerToken(request, userToken);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return request;
@@ -144,6 +150,7 @@ namespace Creatubbles.Api
 
             UnityWebRequest request = UnityWebRequest.Post(url, data);
             SetAuthorizationHeaderBearerToken(request, userToken);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return request;
@@ -152,6 +159,7 @@ namespace Creatubbles.Api
         public UnityWebRequest CreatePutUploadFileRequest(string userToken, string url, string contentType, byte[] data)
         {
             UnityWebRequest request = UnityWebRequest.Put(url, data);
+            SetAcceptLanguageHeader(request);
             request.SetRequestHeader("Content-Type", contentType);
             request.downloadHandler = new DownloadHandlerBuffer();
 
@@ -175,10 +183,13 @@ namespace Creatubbles.Api
             }
             request.method = UnityWebRequest.kHttpVerbPUT;
             SetAuthorizationHeaderBearerToken(request, userToken);
+            SetAcceptLanguageHeader(request);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return request;
         }
+
+        // helper methods
 
         private string RequestUrl(string path)
         {
@@ -188,6 +199,11 @@ namespace Creatubbles.Api
         private void SetAuthorizationHeaderBearerToken(UnityWebRequest request, string token)
         {
             request.SetRequestHeader("Authorization", "Bearer " + token);
+        }
+
+        private void SetAcceptLanguageHeader(UnityWebRequest request)
+        {
+            request.SetRequestHeader("Accept-Language", configuration.Locale);
         }
     }
 }

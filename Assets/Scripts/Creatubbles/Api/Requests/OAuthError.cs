@@ -1,5 +1,5 @@
 ﻿//
-// InMemoryStorage.cs
+// OAuthError.cs
 // CreatubblesApiClient
 //
 // Copyright (c) 2016 Creatubbles Pte. Ltd.
@@ -21,42 +21,19 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-//
 
 using System;
-using System.Collections.Generic;
-using System.Collections;
 
 namespace Creatubbles.Api
 {
-    public class InMemoryStorage: ISecureStorage
+    [Serializable]
+    public class OAuthError
     {
-        private static Dictionary<string, string> store = new Dictionary<string, string>();
-
-        public bool HasValue(string key)
-        {
-            return store.ContainsKey(key) && store[key] != null;
-        }
-
-        public string LoadValue(string key)
-        {
-            return store[key];
-        }
-
-        public void SaveValue(string key, string value)
-        {
-            store[key] = value;
-        }
-
-        public void DeleteValue(string key)
-        {
-            store.Remove(key);
-        }
-
-        public void Clear()
-        {
-            store.Clear();
-        }
+        // TODO - consider replacing with enum
+        // error type like "invalid_request"
+        public string error;
+        // TODO - consider localizing?
+        // human readable error description
+        public string error_description;
     }
 }
-

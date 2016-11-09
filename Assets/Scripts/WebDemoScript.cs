@@ -45,7 +45,7 @@ public class WebDemoScript: MonoBehaviour
     void Start()
     {
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
-        StartCoroutine(GetAppToken());
+        StartCoroutine(GetLandingUrls());
 //        StartCoroutine(LogIn(SecretData.Username, SecretData.Password));
     }
 	
@@ -55,57 +55,42 @@ public class WebDemoScript: MonoBehaviour
 	
     }
 
-    IEnumerator GetAppToken()
+    // TODO - add SendPublicRequest to CreatubblesApiClient, which will handle savind and loading token from storage, performing OAuth request and finally performing the actual public API request
+    IEnumerator GetLandingUrls()
     {
-        UnityWebRequest www = creatubbles.CreatePostAuthenticationApplicationTokenRequest();
-        ApiRequest<string> request = new ApiRequest<string>(www);
+        // TODO - check if application token is in secure storage
 
-        Log("Sending request: " + www.url);
+        // TODO - if no application token in storage, then get token from backend
+        // get application token
+        OAuthRequest applicationTokenRequest = creatubbles.CreatePostAuthenticationApplicationTokenRequest();
 
-        yield return www.Send();
+        Log("Sending request: " + applicationTokenRequest.Url);
 
-        if (request.IsAnyError)
+        yield return applicationTokenRequest.Send();
+
+        if (applicationTokenRequest.IsAnyError)
         {
-            Log("Request error: " + www.error);
-			Log("Error body: " + www.downloadHandler.text);
-
+            HandleOAuthError(applicationTokenRequest);
             yield break;
         }
 
-        Log("[Response] code: " + www.responseCode + "\n body: " + www.downloadHandler.text);
+        string accessToken = applicationTokenRequest.data.access_token;
 
-        OAuthTokenReponse data = JsonUtility.FromJson<OAuthTokenReponse>(www.downloadHandler.text);
-
-        StartCoroutine(GetLandingUrls(data.access_token));
-    }
-
-    IEnumerator GetLandingUrls(string accessToken)
-    {
+        // get landing URLs with application token
         ApiRequest<LandingUrlsResponse> request = creatubbles.CreateGetLandingUrlsRequest(accessToken);
+
+        // TODO - save token to secure storage
 
         Log("Sending request: " + request.Url);
 
         yield return request.Send();
 
-        // handle errors
         if (request.IsAnyError)
         {
-            if (request.IsSystemError)
-            {
-                Log("System error: " + request.SystemError);
-            }
-            else if (request.IsApiError)
-            {
-                if (request.apiErrors != null && request.apiErrors.Length > 0)
-                {
-                    Log("API error: " + request.apiErrors[0].title);
-                }
-            }
-
+            HandleApiErrors<LandingUrlsResponse>(request);
             yield break;
         }
 
-        // handle response
         LandingUrlsResponse response = request.data;
         if (response != null && response.data != null && response.data.Length > 0)
         {
@@ -280,6 +265,40 @@ public class WebDemoScript: MonoBehaviour
         else
         {
             Log("[Response] code: " + request.responseCode + ", body: " + request.downloadHandler.text);
+        }
+    }
+        
+    // helper methods
+
+    private void HandleOAuthError(OAuthRequest request)
+    {
+        if (request.IsSystemError)
+        {
+            Log("System error: " + request.SystemError);
+        }
+        else if (request.IsOAuthError && request.oAuthError != null)
+        {
+            Log("API error: " + request.oAuthError.error_description);
+        }
+        else
+        {
+            Log("Something went wrong");
+        }
+    }
+
+    private void HandleApiErrors<T>(ApiRequest<T> request)
+    {
+        if (request.IsSystemError)
+        {
+            Log("System error: " + request.SystemError);
+        }
+        else if (request.IsApiError && request.apiErrors != null && request.apiErrors.Length > 0)
+        {
+            Log("API error: " + request.apiErrors[0].title);
+        }
+        else
+        {
+            Log("Something went wrong");
         }
     }
 
