@@ -239,7 +239,7 @@ namespace Creatubbles.Api
             return new ApiRequest<CreationGetResponse>(request, HttpRequest.Type.Private);
         }
 
-        public ApiRequest<CreationsUploadPostResponse> CreatePostCreationUploadRequest(string creationId, UploadExtension extension = UploadExtension.JPG)
+        public ApiRequest<CreationsUploadPostResponse> CreatePostCreationUploadRequest(string creationId, UploadExtension extension)
         {
             string url = RequestUrl("/creations/" + creationId + "/uploads");
             WWWForm data = new WWWForm();

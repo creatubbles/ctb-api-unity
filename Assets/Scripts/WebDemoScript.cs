@@ -67,7 +67,7 @@ public class WebDemoScript: MonoBehaviour
 
         Log("-------");
         // upload new creation
-        yield return UploadCreation("Unity Creation #2");
+        yield return UploadCreation("[TEST] Unity Creation");
     }
 
     #region API related methods
