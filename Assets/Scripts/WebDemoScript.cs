@@ -79,7 +79,7 @@ public class WebDemoScript: MonoBehaviour
         Log("Sending request: " + request.Url);
 
         // getting landing URLs is a public request
-        yield return creatubbles.SendPublicRequest(request);
+        yield return creatubbles.SendRequest(request);
 
         if (request.IsAnyError)
         {
@@ -88,7 +88,7 @@ public class WebDemoScript: MonoBehaviour
         }
 
         // do something useful with the result
-        LandingUrlsResponse response = request.data;
+        LandingUrlsResponse response = request.Data;
         if (response != null && response.data != null && response.data.Length > 0)
         {
             Log("Response data: " + response.data[0].ToString());
@@ -158,7 +158,7 @@ public class WebDemoScript: MonoBehaviour
 
         Log("Sending request: " + request.Url);
 
-        yield return creatubbles.SendSecureRequest(request);
+        yield return creatubbles.SendRequest(request);
 
         if (request.IsAnyError)
         {
@@ -166,13 +166,13 @@ public class WebDemoScript: MonoBehaviour
             yield break;
         }
 
-        if (request.data == null || request.data.data == null)
+        if (request.Data == null || request.Data.data == null)
         {
             Debug.Log("Error: Invalid or missing data in response");
             yield break;
         }
 
-        Log("Success with data: " + request.data.data.ToString());
+        Log("Success with data: " + request.Data.data.ToString());
     }
 
     private void HandleOAuthError(OAuthRequest request)
@@ -181,7 +181,7 @@ public class WebDemoScript: MonoBehaviour
         {
             Log("System error: " + request.SystemError);
         }
-        else if (request.IsOAuthError && request.oAuthError != null)
+        else if (request.IsHttpError && request.oAuthError != null)
         {
             Log("API error: " + request.oAuthError.error_description);
         }
@@ -193,7 +193,7 @@ public class WebDemoScript: MonoBehaviour
         {
             Log("System error: " + request.SystemError);
         }
-        else if (request.IsApiError && request.apiErrors != null && request.apiErrors.Length > 0)
+        else if (request.IsHttpError && request.apiErrors != null && request.apiErrors.Length > 0)
         {
             // if unauthorized, log user out
             Log("API error: " + request.apiErrors[0].title);

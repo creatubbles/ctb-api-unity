@@ -29,91 +29,32 @@ using UnityEngine;
 
 namespace Creatubbles.Api
 {
-    public class ApiRequest<T>
+    public class ApiRequest<T>: HttpRequest
     {
-        private UnityWebRequest webRequest;
-
-        // true for HTTP statuses from 200 to 399
-        private bool IsNonFailureHttpStatus { get { return 200 <= webRequest.responseCode && webRequest.responseCode <= 399; } }
-
         // data from response body
-        public T data;
-
-        // returns response body as string or empty string if response had no body or DownloadHandler was not provided
-        public string RawResponseBody
-        {
-            get
-            {
-                if (webRequest.downloadHandler == null || webRequest.downloadHandler.text == null)
-                {
-                    return "";
-                }
-
-                return webRequest.downloadHandler.text;
-            }
-        }
-
-        // true when Unity encountered a system error like no internet connection, socket errors, errors resolving DNS entries, or the redirect limit being exceeded
-        // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html
-        public bool IsSystemError { get { return webRequest.isError; } }
-
-        // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-error.html
-        public string SystemError { get { return webRequest.error; } }
-
-		// true when request ends with an error like HTTP status 4xx or 5xx
-        public bool IsApiError { get { return webRequest.isDone && !IsNonFailureHttpStatus; } }
+        public T Data { get; private set; }
 
         // contains the errors returned by the API
         public ApiError[] apiErrors;
 
-        // true when either system or API errors occured
-        public bool IsAnyError { get { return IsSystemError || IsApiError; } }
-
-        // URL of the request
-        public string Url { get { return webRequest.url; } }
-
-        public bool IsAborted { get; private set; }
-
-        public ApiRequest(UnityWebRequest webRequest)
+        public ApiRequest(UnityWebRequest webRequest, Type requestType): base(webRequest, requestType)
         {
-            this.webRequest = webRequest;
-            this.IsAborted = false;
         }
 
-        internal IEnumerator Send()
+        override internal IEnumerator Send()
         {
-            IsAborted = false;
-
-            yield return webRequest.Send();
-
-            // can't process response without download handler
-            if (webRequest.downloadHandler == null)
-            {
-                yield break;
-            }
-
-            string json = webRequest.downloadHandler.text;
+            yield return base.Send();
 
             // deserialize any API errors
-            if (!IsSystemError && IsApiError)
+            if (IsHttpError)
             {
-                apiErrors = DeserializeJson<ApiErrorResponse>(json).errors;
+                Debug.Log("Raw error body: " + RawResponseBody);
+                apiErrors = DeserializeJson<ApiErrorResponse>(RawResponseBody).errors;
                 yield break;
             }
 
-            // deserialize actual response body
-            data = DeserializeJson<T>(json);
-        }
-
-        public void Abort()
-        {
-            webRequest.Abort();
-            IsAborted = true;
-        }
-
-        public void SetRequestHeader(string name, string value)
-        {
-            webRequest.SetRequestHeader(name, value);
+            // deserialize response body
+            Data = DeserializeJson<T>(RawResponseBody);
         }
 
         private static DeserializedType DeserializeJson<DeserializedType>(string json)

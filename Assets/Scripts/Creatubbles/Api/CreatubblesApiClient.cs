@@ -52,31 +52,50 @@ namespace Creatubbles.Api
 
             yield return request.Send();
 
-            if (request.IsAnyError || request.data == null)
+            if (request.IsAnyError || request.Data == null)
             {
                 yield break;
             }
 
-            Debug.Log("logged in and saved token: " + request.data.access_token);
-            secureStorage.SaveValue(UserAccessTokenKey, request.data.access_token);
+            secureStorage.SaveValue(UserAccessTokenKey, request.Data.access_token);
+            Debug.Log("logged in and saved token: " + request.Data.access_token);
         }
 
-        // attempts to send request with user token if it's present in ISecureStorage instance
-        public IEnumerator SendSecureRequest<T>(ApiRequest<T> request)
+        // sends the request with authorization header set based on requestType
+        public IEnumerator SendRequest(HttpRequest request)
+        {
+            switch (request.requestType)
+            {
+                case HttpRequest.Type.Private:
+                    yield return SendPrivateRequest(request);
+                    break;
+                case HttpRequest.Type.Public:
+                    yield return SendPublicRequest(request);
+                    break;
+                case HttpRequest.Type.Regular:
+                    yield return SendRegularRequest(request);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        // attempts to send request with user OAuth token if it's present in ISecureStorage instance
+        private IEnumerator SendPrivateRequest(HttpRequest request)
         {
             string accessToken = null;
             if (secureStorage.HasValue(UserAccessTokenKey))
             {
                 accessToken = secureStorage.LoadValue(UserAccessTokenKey);
-                SetAuthorizationHeaderBearerToken<T>(request, accessToken);
+                SetAuthorizationHeaderBearerToken(request, accessToken);
                 SetAcceptLanguageHeader(request);
             }
 
             yield return request.Send();
         }
 
-        // attempts to send request with application token if it's present in ISecureStorage instance
-        public IEnumerator SendPublicRequest<T>(ApiRequest<T> request)
+        // attempts to send request with application OAuth token if it's present in ISecureStorage instance
+        private IEnumerator SendPublicRequest(HttpRequest request)
         {
             string accessToken = null;
             if (secureStorage.HasValue(AppAccessTokenKey))
@@ -91,19 +110,19 @@ namespace Creatubbles.Api
 
                 if (!tokenRequest.IsAnyError)
                 {
-                    accessToken = tokenRequest.data.access_token;
+                    accessToken = tokenRequest.Data.access_token;
                     secureStorage.SaveValue(AppAccessTokenKey, accessToken);
                 }
             }
 
-            SetAuthorizationHeaderBearerToken<T>(request, accessToken);
+            SetAuthorizationHeaderBearerToken(request, accessToken);
             SetAcceptLanguageHeader(request);
 
             yield return request.Send();
         }
 
         // sends unmodified request
-        public IEnumerator SendRequest<T>(ApiRequest<T> request)
+        private IEnumerator SendRegularRequest(HttpRequest request)
         {
             yield return request.Send();
         }
@@ -163,7 +182,7 @@ namespace Creatubbles.Api
             UnityWebRequest request = UnityWebRequest.Get(url);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return new ApiRequest<LandingUrlsResponse>(request);
+            return new ApiRequest<LandingUrlsResponse>(request, HttpRequest.Type.Public);
         }
 
         public ApiRequest<LoggedInUserResponse> CreateGetLoggedInUserRequest()
@@ -172,8 +191,7 @@ namespace Creatubbles.Api
             UnityWebRequest request = UnityWebRequest.Get(url);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-
-            return new ApiRequest<LoggedInUserResponse>(request);
+            return new ApiRequest<LoggedInUserResponse>(request, HttpRequest.Type.Private);
         }
 
         public ApiRequest<CreationGetResponse> CreateNewCreationRequest(NewCreationData creationData)
@@ -209,7 +227,7 @@ namespace Creatubbles.Api
             UnityWebRequest request = UnityWebRequest.Post(url, data);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return new ApiRequest<CreationGetResponse>(request);
+            return new ApiRequest<CreationGetResponse>(request, HttpRequest.Type.Private);
         }
 
         public ApiRequest<CreationGetResponse> CreateGetCreationRequest(string creationId)
@@ -218,7 +236,7 @@ namespace Creatubbles.Api
             UnityWebRequest request = UnityWebRequest.Get(url);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return new ApiRequest<CreationGetResponse>(request);
+            return new ApiRequest<CreationGetResponse>(request, HttpRequest.Type.Private);
         }
 
         public ApiRequest<CreationsUploadPostResponse> CreatePostCreationUploadRequest(string creationId, UploadExtension extension = UploadExtension.JPG)
@@ -230,20 +248,20 @@ namespace Creatubbles.Api
             UnityWebRequest request = UnityWebRequest.Post(url, data);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return new ApiRequest<CreationsUploadPostResponse>(request);
+            return new ApiRequest<CreationsUploadPostResponse>(request, HttpRequest.Type.Private);
         }
 
-        public ApiRequestWithEmptyResponseData CreatePutUploadFileRequest(string url, string contentType, byte[] data)
+        public HttpRequest CreatePutUploadFileRequest(string url, string contentType, byte[] data)
         {
             UnityWebRequest request = UnityWebRequest.Put(url, data);
             request.SetRequestHeader("Content-Type", contentType);
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return new ApiRequestWithEmptyResponseData(request);
+            return new HttpRequest(request, HttpRequest.Type.Regular);
         }
 
         // API doc: https://stateoftheart.creatubbles.com/api/#update-creation-upload
-        public ApiRequestWithEmptyResponseData CreatePutUploadFinishedRequest(string pingUrl, string abortedWithMessage = null)
+        public HttpRequest CreatePutUploadFinishedRequest(string pingUrl, string abortedWithMessage = null)
         {
             UnityWebRequest request;
             if (abortedWithMessage != null)
@@ -259,7 +277,7 @@ namespace Creatubbles.Api
             request.method = UnityWebRequest.kHttpVerbPUT;
             request.downloadHandler = new DownloadHandlerBuffer();
 
-            return new ApiRequestWithEmptyResponseData(request);
+            return new HttpRequest(request, HttpRequest.Type.Private);
         }
 
         #endregion
@@ -271,17 +289,12 @@ namespace Creatubbles.Api
             return configuration.BaseUrl + "/" + configuration.ApiVersion + path;
         }
 
-        private void SetAuthorizationHeaderBearerToken<T>(ApiRequest<T> request, string accessToken)
+        private void SetAuthorizationHeaderBearerToken(HttpRequest request, string accessToken)
         {
             request.SetRequestHeader("Authorization", "Bearer " + accessToken);
         }
 
-        private void SetAcceptLanguageHeader<T>(ApiRequest<T>  request)
-        {
-            request.SetRequestHeader("Accept-Language", configuration.Locale);
-        }
-
-        private void SetAcceptLanguageHeader(OAuthRequest request)
+        private void SetAcceptLanguageHeader(HttpRequest request)
         {
             request.SetRequestHeader("Accept-Language", configuration.Locale);
         }

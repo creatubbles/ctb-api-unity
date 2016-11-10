@@ -35,6 +35,7 @@ namespace Creatubbles.Api
     {
         private const string InternalErrorMissingOrInvalidResponseData = "Invalid or missing data in reponse body.";
         private const string InternalErrorUnsupportedDataType = "Unsupported data type used.";
+        private const string InternalErrorUnknownError = "An unknown error occured.";
 
         private NewCreationData creationData;
 
@@ -89,7 +90,7 @@ namespace Creatubbles.Api
 
                 Debug.Log("Sending request: " + makeCreationRequest.Url);
 
-                yield return creatubbles.SendSecureRequest(makeCreationRequest);
+                yield return creatubbles.SendRequest(makeCreationRequest);
 
                 if (makeCreationRequest.IsAnyError)
                 {
@@ -97,15 +98,15 @@ namespace Creatubbles.Api
                     yield break;
                 }
 
-                if (makeCreationRequest.data == null || makeCreationRequest.data.data == null)
+                if (makeCreationRequest.Data == null || makeCreationRequest.Data.data == null)
                 {
                     FinishWithInternalError(InternalErrorMissingOrInvalidResponseData);
                     yield break;
                 }
 
-                Debug.Log("Success with data: " + makeCreationRequest.data.data.ToString());
+                Debug.Log("Success with data: " + makeCreationRequest.Data.data.ToString());
 
-                creationId = makeCreationRequest.data.data.id;
+                creationId = makeCreationRequest.Data.data.id;
             }
 
             // TODO - support other upload types
@@ -120,7 +121,7 @@ namespace Creatubbles.Api
 
             Debug.Log("Sending request: " + prepareUploadRequest.Url);
 
-            yield return creatubbles.SendSecureRequest(prepareUploadRequest);
+            yield return creatubbles.SendRequest(prepareUploadRequest);
 
             if (prepareUploadRequest.IsAnyError)
             {
@@ -128,17 +129,17 @@ namespace Creatubbles.Api
                 yield break;
             }
 
-            if (prepareUploadRequest.data == null || prepareUploadRequest.data.data == null)
+            if (prepareUploadRequest.Data == null || prepareUploadRequest.Data.data == null)
             {
                 Debug.Log("Error: Invalid or missing data in response");
                 yield break;
             }
 
-            Debug.Log("Prepared Creation upload: " + prepareUploadRequest.data.data.ToString());
-            CreationsUploadAttributesDto upload = prepareUploadRequest.data.data.attributes;
+            Debug.Log("Prepared Creation upload: " + prepareUploadRequest.Data.data.ToString());
+            CreationsUploadAttributesDto upload = prepareUploadRequest.Data.data.attributes;
 
             // perform upload
-            ApiRequestWithEmptyResponseData uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
+            HttpRequest uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
 
             Debug.Log("Sending request: " + uploadRequest.Url);
 
@@ -152,7 +153,7 @@ namespace Creatubbles.Api
 
             if (uploadRequest.IsAnyError)
             {
-                FinishWithErrors(uploadRequest);
+                FinishWithSystemOrInternalErrors(uploadRequest);
                 yield return PutUploadFileFinished(creatubbles, upload.ping_url, uploadRequest.RawResponseBody);
                 yield break;
             }
@@ -167,15 +168,15 @@ namespace Creatubbles.Api
 
         private IEnumerator PutUploadFileFinished(CreatubblesApiClient creatubbles, string pingUrl, string abortedWithMessage = null)
         {
-            ApiRequestWithEmptyResponseData request = creatubbles.CreatePutUploadFinishedRequest(pingUrl);
+            HttpRequest request = creatubbles.CreatePutUploadFinishedRequest(pingUrl);
 
             Debug.Log("Sending request: " + request.Url);
 
-            yield return creatubbles.SendSecureRequest(request);
+            yield return creatubbles.SendRequest(request);
 
             if (request.IsAnyError)
             {
-                FinishWithErrors(request);
+                FinishWithSystemOrInternalErrors(request);
                 yield break;
             }
 
@@ -188,13 +189,33 @@ namespace Creatubbles.Api
             {
                 FinishWithSystemError(request);
             }
-            else
+            else if (request.IsHttpError)
             {
                 FinishWithApiErrors(request);
             }
+            else
+            {
+                FinishWithInternalError(InternalErrorUnknownError);
+            }
         }
 
-        private void FinishWithSystemError<T>(ApiRequest<T> request)
+        private void FinishWithSystemOrInternalErrors(HttpRequest request)
+        {
+            if (request.IsSystemError)
+            {
+                FinishWithSystemError(request);
+            }
+            else if (request.IsHttpError)
+            {
+                FinishWithInternalError("Request '" + request.Url + "' failed with response code '" + request.ResponseCode + "' and body '" + request.RawHttpError + "'");
+            }
+            else
+            {
+                FinishWithInternalError(InternalErrorUnknownError);
+            }
+        }
+
+        private void FinishWithSystemError(HttpRequest request)
         {
             IsSystemError = true;
             SystemError = request.SystemError;

@@ -29,71 +29,32 @@ using System.Collections;
 
 namespace Creatubbles.Api
 {
-    public class OAuthRequest
+    public class OAuthRequest: HttpRequest
     {
-        private UnityWebRequest webRequest;
-
-        // true for HTTP statuses from 200 to 399
-        private bool IsNonFailureHttpStatus { get { return 200 <= webRequest.responseCode && webRequest.responseCode <= 399; } }
-
         // data from response body
-        public OAuthTokenReponse data;
+        public OAuthTokenReponse Data { get; private set; }
 
-        // true when Unity encountered a system error like no internet connection, socket errors, errors resolving DNS entries, or the redirect limit being exceeded
-        // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html
-        public bool IsSystemError { get { return webRequest.isError; } }
-
-        // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-error.html
-        public string SystemError { get { return webRequest.error; } }
-
-        // true when request ends with an error like HTTP status 4xx or 5xx
-        public bool IsOAuthError { get { return !IsNonFailureHttpStatus; } }
-
-        // contains the errors returned by the API
+        // contains parsed HTTP errors
         public OAuthError oAuthError;
 
-        // true when either system or API errors occured
-        public bool IsAnyError { get { return IsSystemError || IsOAuthError; } }
-
-        // URL of the request
-        public string Url { get { return webRequest.url; } }
-
-        public OAuthRequest(UnityWebRequest webRequest)
+        // OAuth requests don't require OAuth authorization tokens, so their type is Regular
+        public OAuthRequest(UnityWebRequest webRequest): base(webRequest, Type.Regular)
         {
-            this.webRequest = webRequest;
         }
 
-        public IEnumerator Send()
+        override internal IEnumerator Send()
         {
-            yield return webRequest.Send();
-
-            // can't process response without download handler
-            if (webRequest.downloadHandler == null)
-            {
-                yield break;
-            }
-
-            string json = webRequest.downloadHandler.text;
+            yield return base.Send();
 
             // deserialize any API errors
-            if (!IsSystemError && IsOAuthError)
+            if (IsHttpError)
             {
-                oAuthError = DeserializeJson<OAuthError>(json);
+                oAuthError = DeserializeJson<OAuthError>(RawResponseBody);
                 yield break;
             }
 
             // deserialize actual response body
-            data = DeserializeJson<OAuthTokenReponse>(json);
-        }
-
-        public void Abort()
-        {
-            webRequest.Abort();
-        }
-
-        public void SetRequestHeader(string name, string value)
-        {
-            webRequest.SetRequestHeader(name, value);
+            Data = DeserializeJson<OAuthTokenReponse>(RawResponseBody);
         }
 
         private static DeserializedType DeserializeJson<DeserializedType>(string json)
@@ -102,4 +63,3 @@ namespace Creatubbles.Api
         }
     }
 }
-
