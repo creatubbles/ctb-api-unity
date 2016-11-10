@@ -28,7 +28,6 @@ using UnityEngine;
 
 namespace Creatubbles.Api
 {
-    // TODO - add progress reporting
     // performs series of requests allocating Creation, uploading file, updating Creation and notifying backend when operation finishes
     // see https://stateoftheart.creatubbles.com/api/#creation-upload for details
     public class CreationUploadSession
@@ -38,6 +37,8 @@ namespace Creatubbles.Api
         private const string InternalErrorUnknownError = "An unknown error occured.";
 
         private NewCreationData creationData;
+        // upload request is cached in instance variable as data source for UploadProgress
+        private HttpRequest uploadRequest;
 
         // is true when all requests completed or error was encountered
         public bool IsDone { get; private set; }
@@ -64,6 +65,8 @@ namespace Creatubbles.Api
         // true when either system, API or internal errors occured
         public bool IsAnyError { get { return IsSystemError || IsApiError || IsInternalError; } }
 
+        public float UploadProgress { get { return uploadRequest == null ? 0 : uploadRequest.UploadProgress; } }
+
         public CreationUploadSession(NewCreationData creationData)
         {
             this.creationData = creationData;
@@ -76,11 +79,11 @@ namespace Creatubbles.Api
         // triggers series of requests forming new Creation entity, uploading file, updating Creation with uploaded file's URL and notifying server when upload is finished
         public IEnumerator Upload(CreatubblesApiClient creatubbles)
         {
+            IsDone = false;
             IsSystemError = false;
             IsApiError = false;
             IsInternalError = false;
-
-            IsDone = false;
+            uploadRequest = null;
 
             string creationId = creationData.creationId;
             // make new Creation entity
@@ -139,7 +142,7 @@ namespace Creatubbles.Api
             CreationsUploadAttributesDto upload = prepareUploadRequest.Data.data.attributes;
 
             // perform upload
-            HttpRequest uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
+            uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
 
             Debug.Log("Sending request: " + uploadRequest.Url);
 

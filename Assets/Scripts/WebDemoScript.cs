@@ -34,9 +34,11 @@ using Creatubbles.Api;
 public class WebDemoScript: MonoBehaviour
 {
     public Text textControl;
+    public Text progressText;
     public Texture2D texture;
 
     private CreatubblesApiClient creatubbles;
+    private CreationUploadSession creationUploadSession;
 
     // Use this for initialization
     void Start()
@@ -52,7 +54,11 @@ public class WebDemoScript: MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-	
+        if (creationUploadSession != null)
+        {
+            int progress = (int)(creationUploadSession.UploadProgress * 100);
+            progressText.text = "Upload progress: " + progress + "%";
+        }
     }
 
     // example of getting landing URLs, logging in and uploading a creation
@@ -115,7 +121,6 @@ public class WebDemoScript: MonoBehaviour
     }
 
     // creates a new Creation entity and uploads an image with it
-    // TODO - upload progress reporting and abort features are work in progress
     IEnumerator UploadCreation(string name)
     {
         byte[] imageData = texture.EncodeToPNG();
@@ -125,7 +130,7 @@ public class WebDemoScript: MonoBehaviour
         creationData.creationMonth = DateTime.Now.Month;
         creationData.creationYear = DateTime.Now.Year;
 
-        CreationUploadSession creationUploadSession = new CreationUploadSession(creationData);
+        creationUploadSession = new CreationUploadSession(creationData);
 
         yield return creationUploadSession.Upload(creatubbles);
 
@@ -142,9 +147,11 @@ public class WebDemoScript: MonoBehaviour
             }
             else if (creationUploadSession.IsInternalError)
             {
-                Log("Internal erro: " + creationUploadSession.InternalError);
+                Log("Internal error: " + creationUploadSession.InternalError);
             }
         }
+
+        creationUploadSession = null;
     }
 
     #endregion

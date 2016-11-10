@@ -73,6 +73,10 @@ namespace Creatubbles.Api
 
         public long ResponseCode { get { return webRequest.responseCode; } }
 
+        public float UploadProgress { get { return webRequest.uploadProgress; } }
+
+        public ulong UploadedBytes { get { return webRequest.uploadedBytes; } }
+
         // true for HTTP statuses from 200 to 399
         public bool IsNonFailureHttpStatus { get { return 200 <= ResponseCode && ResponseCode <= 399; } }
 
