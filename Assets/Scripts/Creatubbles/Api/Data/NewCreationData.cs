@@ -29,22 +29,9 @@ namespace Creatubbles.Api
     [Serializable]
 	public class NewCreationData
 	{
-        public enum Type
-        {
-            Image = 0,
-            Url = 1,
-            Data = 2
-        }
-
-        private const int InvalidCreationYear = -1;
-        private const int InvalidCreationMonth = -1;
-
         public readonly byte[] data;
-        public readonly byte[] image;
         public readonly string url;
-
         public readonly UploadExtension uploadExtension;
-        public readonly Type dataType;
 
 		public string creationId;
 		public string name;
@@ -52,24 +39,19 @@ namespace Creatubbles.Api
 		public string reflectionVideoUrl;
 		public string galleryId;
 		public string[] creatorIds;
-        public int creationYear = InvalidCreationYear;
-        public int creationMonth = InvalidCreationMonth;
+        public int? creationYear;
+        public int? creationMonth;
 
-        public NewCreationData(byte[] imageData, UploadExtension imageExtension)
+        public NewCreationData(byte[] data, UploadExtension extension)
         {
-            this.image = imageData;
-            this.uploadExtension = imageExtension;
-            dataType = Type.Image;
+            this.data = data;
+            this.uploadExtension = extension;
         }
 
-        public bool HasCreationYear
+        public NewCreationData(string url, UploadExtension extension)
         {
-            get { return creationYear != InvalidCreationYear; }
-        }
-
-        public bool HasCreationMonth
-        {
-            get { return creationMonth != InvalidCreationMonth; }
+            this.url = url;
+            this.uploadExtension = extension;
         }
 	}
 }

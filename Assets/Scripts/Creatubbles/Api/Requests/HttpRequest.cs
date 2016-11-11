@@ -59,7 +59,7 @@ namespace Creatubbles.Api
         public bool IsHttpError { get { return IsDone && !IsCancelled && !IsNonFailureHttpStatus; } }
 
         // returns RawResponseBody
-        public string RawHttpError { get { return RawResponseBody; } }
+        public string RawHttpError { get { return ResponseBodyText; } }
 
         // true if System or HTTP error occured
         public bool IsAnyError { get { return IsSystemError || IsHttpError; } }
@@ -76,13 +76,13 @@ namespace Creatubbles.Api
 
         public float UploadProgress { get { return webRequest.uploadProgress; } }
 
-        public ulong UploadedBytes { get { return webRequest.uploadedBytes; } }
+        public float DownloadProgress { get { return webRequest.downloadProgress; } }
 
         // true for HTTP statuses from 200 to 399
         public bool IsNonFailureHttpStatus { get { return 200 <= ResponseCode && ResponseCode <= 399; } }
 
         // returns response body as string or empty string if response had no body or DownloadHandler was not provided
-        public string RawResponseBody
+        public string ResponseBodyText
         {
             get
             {
@@ -92,6 +92,20 @@ namespace Creatubbles.Api
                 }
 
                 return webRequest.downloadHandler.text;
+            }
+        }
+
+        // returns response body as byte array or empty byte array if response had no body or DownloadHandler was not provided
+        public byte[] ResponseBodyBytes
+        {
+            get
+            {
+                if (webRequest.downloadHandler == null || webRequest.downloadHandler.data == null)
+                {
+                    return new byte[0];
+                }
+
+                return webRequest.downloadHandler.data;
             }
         }
 

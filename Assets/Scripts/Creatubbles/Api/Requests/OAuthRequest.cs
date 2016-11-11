@@ -49,12 +49,12 @@ namespace Creatubbles.Api
             // deserialize any API errors
             if (IsHttpError)
             {
-                oAuthError = DeserializeJson<OAuthError>(RawResponseBody);
+                oAuthError = DeserializeJson<OAuthError>(ResponseBodyText);
                 yield break;
             }
 
             // deserialize actual response body
-            Data = DeserializeJson<OAuthTokenReponse>(RawResponseBody);
+            Data = DeserializeJson<OAuthTokenReponse>(ResponseBodyText);
         }
 
         private static DeserializedType DeserializeJson<DeserializedType>(string json)

@@ -53,13 +53,13 @@ namespace Creatubbles.Api
             // deserialize any API errors
             if (IsHttpError)
             {
-                Debug.Log("Raw error body: " + RawResponseBody);
-                apiErrors = DeserializeJson<ApiErrorResponse>(RawResponseBody).errors;
+                Debug.Log("Raw error body: " + ResponseBodyText);
+                apiErrors = DeserializeJson<ApiErrorResponse>(ResponseBodyText).errors;
                 yield break;
             }
 
             // deserialize response body
-            Data = DeserializeJson<T>(RawResponseBody);
+            Data = DeserializeJson<T>(ResponseBodyText);
         }
 
         private static DeserializedType DeserializeJson<DeserializedType>(string json)

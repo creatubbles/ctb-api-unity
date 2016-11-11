@@ -207,13 +207,13 @@ namespace Creatubbles.Api
                 string creatorIds = String.Join(",", creationData.creatorIds);
                 data.AddField("creator_ids", creatorIds); 
             }
-            if (creationData.HasCreationMonth) 
+            if (creationData.creationMonth != null)
             {
-                data.AddField("created_at_month", creationData.creationMonth);
+                data.AddField("created_at_month", creationData.creationMonth.ToString());
             }
-            if (creationData.HasCreationYear)
+            if (creationData.creationYear != null)
             {
-                data.AddField("created_at_year", creationData.creationYear);
+                data.AddField("created_at_year", creationData.creationYear.ToString());
             }
             if (creationData.reflectionText != null)
             {
@@ -251,10 +251,18 @@ namespace Creatubbles.Api
             return new ApiRequest<CreationsUploadPostResponse>(request, HttpRequest.Type.Private);
         }
 
-        public HttpRequest CreatePutUploadFileRequest(string url, string contentType, byte[] data)
+        public HttpRequest CreateUploadFileRequest(string url, string contentType, byte[] data)
         {
             UnityWebRequest request = UnityWebRequest.Put(url, data);
             request.SetRequestHeader("Content-Type", contentType);
+            request.downloadHandler = new DownloadHandlerBuffer();
+
+            return new HttpRequest(request, HttpRequest.Type.Regular);
+        }
+
+        public HttpRequest CreateDownloadFileRequest(string url)
+        {
+            UnityWebRequest request = UnityWebRequest.Get(url);
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return new HttpRequest(request, HttpRequest.Type.Regular);

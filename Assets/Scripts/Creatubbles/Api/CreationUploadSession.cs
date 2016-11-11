@@ -114,20 +114,13 @@ namespace Creatubbles.Api
                 creationId = makeCreationRequest.Data.data.id;
             }
 
-            // TODO - support other upload types
-            if (creationData.dataType != NewCreationData.Type.Image)
-            {
-                FinishWithInternalError(InternalErrorMissingOrInvalidResponseData);
-                yield break;   
-            }
-
             if (IsCancelled)
             {
                 FinishWithInternalError(InternalErrorUserCancelled);
                 yield break;
             }
 
-            // prepare upload for Creation
+            // get upload path for Creation
             ApiRequest<CreationsUploadPostResponse> prepareUploadRequest = creatubbles.CreatePostCreationUploadRequest(creationId, creationData.uploadExtension);
             currentRequest = prepareUploadRequest;
 
@@ -156,12 +149,38 @@ namespace Creatubbles.Api
                 yield break;
             }
 
-            // perform upload
-            uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
+            // prepare data for upload
+            byte[] uploadData = null;
+            // if creationData.url is set, file must be downloaded from the URL, before it can be uploaded
+            if (creationData.url != null)
+            {
+                HttpRequest downloadRequest = creatubbles.CreateDownloadFileRequest(creationData.url);
+                currentRequest = downloadRequest;
+
+                yield return creatubbles.SendRequest(downloadRequest);
+
+                if (downloadRequest.IsAnyError)
+                {
+                    FinishWithSystemOrInternalErrors(downloadRequest);
+                    yield break;
+                }
+
+                uploadData = downloadRequest.ResponseBodyBytes;
+            }
+
+            if (IsCancelled)
+            {
+                yield return NotifyFileUploadFinished(creatubbles, upload.ping_url, NotifyFileUploadFinishedMessageUserCancelled);
+                yield break;
+            }
+
+            uploadData = uploadData != null ? uploadData : creationData.data;
+            uploadRequest = creatubbles.CreateUploadFileRequest(upload.url, upload.content_type, uploadData);
             currentRequest = uploadRequest;
 
             Debug.Log("Sending request: " + uploadRequest.Url);
 
+            // perform upload
             yield return creatubbles.SendRequest(uploadRequest);
             // regardless whether upload was success or failure, we must notify backend about it's status - that request should not be cancelled so currentRequest is nullyfied
             currentRequest = null;
@@ -175,7 +194,7 @@ namespace Creatubbles.Api
             if (uploadRequest.IsAnyError)
             {
                 FinishWithSystemOrInternalErrors(uploadRequest);
-                yield return NotifyFileUploadFinished(creatubbles, upload.ping_url, uploadRequest.RawResponseBody);
+                yield return NotifyFileUploadFinished(creatubbles, upload.ping_url, uploadRequest.ResponseBodyText);
                 yield break;
             }
 
