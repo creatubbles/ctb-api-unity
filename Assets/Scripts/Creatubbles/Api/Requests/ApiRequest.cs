@@ -45,6 +45,11 @@ namespace Creatubbles.Api
         {
             yield return base.Send();
 
+            if (IsCancelled)
+            {
+                yield break;
+            }
+
             // deserialize any API errors
             if (IsHttpError)
             {

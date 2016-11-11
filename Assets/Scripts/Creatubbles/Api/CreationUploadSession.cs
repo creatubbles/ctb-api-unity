@@ -30,18 +30,26 @@ namespace Creatubbles.Api
 {
     // performs series of requests allocating Creation, uploading file, updating Creation and notifying backend when operation finishes
     // see https://stateoftheart.creatubbles.com/api/#creation-upload for details
-    public class CreationUploadSession
+    public class CreationUploadSession: ICancellable
     {
         private const string InternalErrorMissingOrInvalidResponseData = "Invalid or missing data in reponse body.";
         private const string InternalErrorUnsupportedDataType = "Unsupported data type used.";
         private const string InternalErrorUnknownError = "An unknown error occured.";
+        private const string InternalErrorUserCancelled = "Request cancelled by user.";
+
+        private const string NotifyFileUploadFinishedMessageUserCancelled = "user";
 
         private NewCreationData creationData;
-        // upload request is cached in instance variable as data source for UploadProgress
+        // upload request is stored in instance variable as data source for UploadProgress
         private HttpRequest uploadRequest;
+        // current request is stored to support cancellation
+        private ICancellable currentRequest;
 
         // is true when all requests completed or error was encountered
         public bool IsDone { get; private set; }
+
+        // true if request was cancelled
+        public bool IsCancelled { get; private set; }
 
         // true when Unity encountered a system error like no internet connection, socket errors, errors resolving DNS entries, or the redirect limit being exceeded
         // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html
@@ -56,8 +64,8 @@ namespace Creatubbles.Api
         // contains the errors returned by the API
         public ApiError[] ApiErrors { get; private set; }
 
-        // true if some client implementation or internal API error occured like failed data mapping or unsupported upload type selected
-        // NOTE! these kinds of errors are not user-recoverable and should be reported to users as "Something went wrong" kind of error
+        // true if some client implementation or internal API error occured like failed data mapping or malformed response
+        // NOTE! internal errors are not user-recoverable as they usually indicate an issue with implementation (client or backend) e.g. "Something went wrong" kind of error
         public bool IsInternalError { get; private set; }
 
         public string InternalError { get; private set; }
@@ -70,26 +78,20 @@ namespace Creatubbles.Api
         public CreationUploadSession(NewCreationData creationData)
         {
             this.creationData = creationData;
-            this.IsSystemError = false;
-            this.IsApiError = false;
-            this.IsInternalError = false;
-            this.IsDone = false;
+            this.ResetFlagsAndFields();
         }
             
         // triggers series of requests forming new Creation entity, uploading file, updating Creation with uploaded file's URL and notifying server when upload is finished
         public IEnumerator Upload(CreatubblesApiClient creatubbles)
         {
-            IsDone = false;
-            IsSystemError = false;
-            IsApiError = false;
-            IsInternalError = false;
-            uploadRequest = null;
+            ResetFlagsAndFields();
 
             string creationId = creationData.creationId;
             // make new Creation entity
             if (creationId == null)
             {
                 ApiRequest<CreationGetResponse> makeCreationRequest = creatubbles.CreateNewCreationRequest(creationData);
+                currentRequest = makeCreationRequest;
 
                 Debug.Log("Sending request: " + makeCreationRequest.Url);
 
@@ -119,8 +121,15 @@ namespace Creatubbles.Api
                 yield break;   
             }
 
+            if (IsCancelled)
+            {
+                FinishWithInternalError(InternalErrorUserCancelled);
+                yield break;
+            }
+
             // prepare upload for Creation
             ApiRequest<CreationsUploadPostResponse> prepareUploadRequest = creatubbles.CreatePostCreationUploadRequest(creationId, creationData.uploadExtension);
+            currentRequest = prepareUploadRequest;
 
             Debug.Log("Sending request: " + prepareUploadRequest.Url);
 
@@ -134,46 +143,72 @@ namespace Creatubbles.Api
 
             if (prepareUploadRequest.Data == null || prepareUploadRequest.Data.data == null)
             {
-                Debug.Log("Error: Invalid or missing data in response");
+                FinishWithInternalError(InternalErrorMissingOrInvalidResponseData);
                 yield break;
             }
 
             Debug.Log("Prepared Creation upload: " + prepareUploadRequest.Data.data.ToString());
             CreationsUploadAttributesDto upload = prepareUploadRequest.Data.data.attributes;
 
+            if (IsCancelled)
+            {
+                yield return NotifyFileUploadFinished(creatubbles, upload.ping_url, NotifyFileUploadFinishedMessageUserCancelled);
+                yield break;
+            }
+
             // perform upload
             uploadRequest = creatubbles.CreatePutUploadFileRequest(upload.url, upload.content_type, creationData.image);
+            currentRequest = uploadRequest;
 
             Debug.Log("Sending request: " + uploadRequest.Url);
 
             yield return creatubbles.SendRequest(uploadRequest);
+            // regardless whether upload was success or failure, we must notify backend about it's status - that request should not be cancelled so currentRequest is nullyfied
+            currentRequest = null;
 
-            if (uploadRequest.IsAborted)
+            if (uploadRequest.IsCancelled)
             {
-                yield return PutUploadFileFinished(creatubbles, upload.ping_url, "user");
+                yield return NotifyFileUploadFinished(creatubbles, upload.ping_url, NotifyFileUploadFinishedMessageUserCancelled);
                 yield break;
             }
 
             if (uploadRequest.IsAnyError)
             {
                 FinishWithSystemOrInternalErrors(uploadRequest);
-                yield return PutUploadFileFinished(creatubbles, upload.ping_url, uploadRequest.RawResponseBody);
+                yield return NotifyFileUploadFinished(creatubbles, upload.ping_url, uploadRequest.RawResponseBody);
                 yield break;
             }
 
-            Debug.Log("Success");
-            yield return PutUploadFileFinished(creatubbles, upload.ping_url);
+            yield return NotifyFileUploadFinished(creatubbles, upload.ping_url);
 
             IsDone = true;
+            Debug.Log("Creation upload successful");
+        }
+
+        public void Cancel()
+        {
+            if (IsDone)
+            {
+                return;
+            }
+
+            if (currentRequest != null)
+            {
+                currentRequest.Cancel();
+            }
+
+            IsCancelled = true;
         }
 
         #region Helper methods
 
-        private IEnumerator PutUploadFileFinished(CreatubblesApiClient creatubbles, string pingUrl, string abortedWithMessage = null)
+        // notifies the backend that file upload is finished (regardless whether it completed successfully or with errors)
+        private IEnumerator NotifyFileUploadFinished(CreatubblesApiClient creatubbles, string pingUrl, string abortedWithMessage = null)
         {
             HttpRequest request = creatubbles.CreatePutUploadFinishedRequest(pingUrl);
 
-            Debug.Log("Sending request: " + request.Url);
+            string aborted = abortedWithMessage == null ? "" : " with aborted message: " + abortedWithMessage;
+            Debug.Log("Sending request: " + request.Url + aborted);
 
             yield return creatubbles.SendRequest(request);
 
@@ -183,7 +218,7 @@ namespace Creatubbles.Api
                 yield break;
             }
 
-            Debug.Log("Success");
+            Debug.Log("Notify file upload finished request completed");
         }
 
         private void FinishWithErrors<T>(ApiRequest<T> request)
@@ -237,6 +272,16 @@ namespace Creatubbles.Api
             IsInternalError = true;
             InternalError = message;
             IsDone = true;
+        }
+
+        private void ResetFlagsAndFields()
+        {
+            IsSystemError = false;
+            IsApiError = false;
+            IsInternalError = false;
+            IsDone = false;
+            IsCancelled = false;
+            uploadRequest = null;
         }
 
         #endregion

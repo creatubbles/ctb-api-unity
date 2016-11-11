@@ -29,7 +29,7 @@ using UnityEngine;
 
 namespace Creatubbles.Api
 {
-    public class HttpRequest
+    public class HttpRequest: ICancellable
     {
         public enum Type
         {
@@ -55,8 +55,8 @@ namespace Creatubbles.Api
         // See: https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-error.html
         public string SystemError { get { return webRequest.error; } }
 
-        // true if request is done but response code represents failure
-        public bool IsHttpError { get { return IsDone && !IsNonFailureHttpStatus; } }
+        // true when request is done, not cancelled, but response code represents failure
+        public bool IsHttpError { get { return IsDone && !IsCancelled && !IsNonFailureHttpStatus; } }
 
         // returns RawResponseBody
         public string RawHttpError { get { return RawResponseBody; } }
@@ -69,7 +69,8 @@ namespace Creatubbles.Api
 
         public bool IsDone { get { return webRequest.isDone; } }
 
-        public bool IsAborted { get; internal set; }
+        // true if request was cancelled
+        public bool IsCancelled { get; internal set; }
 
         public long ResponseCode { get { return webRequest.responseCode; } }
 
@@ -102,18 +103,18 @@ namespace Creatubbles.Api
         {
             this.webRequest = webRequest;
             this.requestType = requestType;
-            this.IsAborted = false;
+            this.IsCancelled = false;
         }
 
         virtual internal IEnumerator Send()
         {
-            IsAborted = false;
+            IsCancelled = false;
 
             yield return webRequest.Send();
         }
 
         // aborts request if not IsDone
-        public void Abort()
+        public void Cancel()
         {
             if (IsDone)
             {
@@ -121,7 +122,7 @@ namespace Creatubbles.Api
             }
 
             webRequest.Abort();
-            IsAborted = true;
+            IsCancelled = true;
         }
 
         public void SetRequestHeader(string name, string value)

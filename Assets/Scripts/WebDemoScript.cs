@@ -56,8 +56,23 @@ public class WebDemoScript: MonoBehaviour
     {
         if (creationUploadSession != null)
         {
-            int progress = (int)(creationUploadSession.UploadProgress * 100);
-            progressText.text = "Upload progress: " + progress + "%";
+            if (creationUploadSession.IsCancelled)
+            {
+                progressText.text = "Cancelled";
+            }
+            else
+            {
+                int progress = (int)(creationUploadSession.UploadProgress * 100);
+                progressText.text = "Upload progress: " + progress + "%";
+            }
+        }
+    }
+
+    public void CancelUploadButtonClicked()
+    {
+        if (creationUploadSession != null)
+        {
+            creationUploadSession.Cancel();
         }
     }
 
@@ -87,6 +102,13 @@ public class WebDemoScript: MonoBehaviour
         // getting landing URLs is a public request
         yield return creatubbles.SendRequest(request);
 
+        // cancelling request will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
+        if (request.IsCancelled)
+        {
+            Debug.Log("Request cancelled by user");
+            yield break;
+        }
+
         if (request.IsAnyError)
         {
             HandleApiErrors<LandingUrlsResponse>(request);
@@ -111,6 +133,13 @@ public class WebDemoScript: MonoBehaviour
 
         yield return creatubbles.SendLogInRequest(request);
 
+        // cancelling request will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
+        if (request.IsCancelled)
+        {
+            Debug.Log("Request cancelled by user");
+            yield break;
+        }
+
         if (request.IsAnyError)
         {
             HandleOAuthError(request);
@@ -133,6 +162,13 @@ public class WebDemoScript: MonoBehaviour
         creationUploadSession = new CreationUploadSession(creationData);
 
         yield return creationUploadSession.Upload(creatubbles);
+
+        // cancelling upload session will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
+        if (creationUploadSession.IsCancelled)
+        {
+            Debug.Log("Request cancelled by user");
+            yield break;
+        }
 
         if (creationUploadSession.IsAnyError)
         {
@@ -166,6 +202,7 @@ public class WebDemoScript: MonoBehaviour
         Log("Sending request: " + request.Url);
 
         yield return creatubbles.SendRequest(request);
+
 
         if (request.IsAnyError)
         {

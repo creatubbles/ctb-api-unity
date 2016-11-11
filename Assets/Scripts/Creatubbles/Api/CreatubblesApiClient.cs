@@ -64,6 +64,8 @@ namespace Creatubbles.Api
         // sends the request with authorization header set based on requestType
         public IEnumerator SendRequest(HttpRequest request)
         {
+            SetAcceptLanguageHeader(request);
+
             switch (request.requestType)
             {
                 case HttpRequest.Type.Private:
@@ -88,7 +90,6 @@ namespace Creatubbles.Api
             {
                 accessToken = secureStorage.LoadValue(UserAccessTokenKey);
                 SetAuthorizationHeaderBearerToken(request, accessToken);
-                SetAcceptLanguageHeader(request);
             }
 
             yield return request.Send();
@@ -116,7 +117,6 @@ namespace Creatubbles.Api
             }
 
             SetAuthorizationHeaderBearerToken(request, accessToken);
-            SetAcceptLanguageHeader(request);
 
             yield return request.Send();
         }
