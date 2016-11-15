@@ -41,7 +41,7 @@ namespace Creatubbles.Api
 
         override public string ToString()
         {
-            return "{ Id: " + id + ", type: " + type + ", username: " + attributes.username + ", " + attributes.created_at + " }";
+            return "{ Id: " + id + ", username: " + attributes.username + ", created_at: " + attributes.created_at + " }";
         }
     }
 }

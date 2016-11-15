@@ -27,13 +27,20 @@ using System;
 
 namespace Creatubbles.Api
 {
-    // this interface should be implemented by potentially long running operations like network reqeusts, that user should be able to cancel
+    /// <summary>
+    /// This interface should be implemented by potentially long running operations like network reqeusts, that user should be able to cancel.
+    /// </summary>
     public interface ICancellable
     {
-        // true if Cancel() was called while operation was in progress
+        /// <summary>
+        /// Determines if operation was cancelled.
+        /// </summary>
+        /// <value><c>true</c> if <see cref="ICancellable.Cancel()"/> was called while operation was in progress, otherwise <c>false</c>.</value>
         bool IsCancelled { get; }
 
-        // if operation is in progress, cancels it as soon as possible and sets IsCancelled to true
+        /// <summary>
+        /// If operation is in progress, cancels it as soon as possible and sets <see cref="ICancellable.IsCancelled"/> to <c>true</c>.
+        /// </summary>
         void Cancel();
     }
 }

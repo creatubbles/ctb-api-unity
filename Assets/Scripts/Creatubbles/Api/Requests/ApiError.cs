@@ -26,12 +26,22 @@ using System;
 
 namespace Creatubbles.Api
 {
-    //  For error documentation, please check:
-    //  https://partners.creatubbles.com/api/#errors
-    //  http://jsonapi.org/format/#error-objects
+    /// <summary>
+    /// Class representing an error returned by Creatubbles API.
+    /// <list type="bullet">
+    ///     <listheader><term>More info at:</term></listheader>
+    ///     <item><see href="https://partners.creatubbles.com/api/#errors">https://partners.creatubbles.com/api/#errors</see>/</item>
+    ///     <item><see href="http://jsonapi.org/format/#error-objects">http://jsonapi.org/format/#error-objects</see>/</item>
+    /// </list>
+    /// </summary>
     [Serializable]
     public class ApiError
     {
+        // TODO - localize
+        private const string ErrorTitleAuthenticationFailed = "Authentication failed";
+        private const string ErrorDetailsNoDetails = "No more details are available at the moment. Please try again.";
+        private const string ErrorDetailsCreationUploadCancelled = "Your creation upload was cancelled. Please re-upload again, or add new creation.";
+
         // Defaults
         private const int DefaultStatus = -6000;
         private const string DefaultDomain = "com.creatubbles.apiclient.errordomain";
@@ -48,6 +58,9 @@ namespace Creatubbles.Api
 
         public int status;
         public string code;
+        /// <summary>
+        /// Human readable title. Respects request's Accept-Language header.
+        /// </summary>
         public string title;
         public string source;
         public string detail;
@@ -57,7 +70,6 @@ namespace Creatubbles.Api
         {
             this.status = status;
             this.code = code;
-            // human readable, respects Accept-Language header
             this.title = title;
             this.source = source;
             this.detail = detail;
@@ -66,25 +78,23 @@ namespace Creatubbles.Api
 
         public static ApiError GenericLoginError()
         {
-            // TODO - localize?
             return GenericError(
                 status: LoginStatus,
                 code: DefaultCode,
-                title: "Authentication failed",
+                title: ErrorTitleAuthenticationFailed,
                 source: "https://www.creatubbles.com/api/v2/users",
-                detail: "No more details are available at the moment. Please try again."
+                detail: ErrorDetailsNoDetails
             );
         }
 
         public static ApiError GenericUploadCancelledError()
         {
-            // TODO - localize?
             return GenericError(
                 status: UploadCancelledStatus,
                 code: "upload-cancelled",
                 title: "Upload cancelled",
                 source: DefaultSource,
-                detail: "Your creation upload was cancelled. Please re-upload again, or add new creation."
+                detail: ErrorDetailsCreationUploadCancelled
             );
         }
 

@@ -27,13 +27,19 @@ using System;
 namespace Creatubbles.Api
 {
     [Serializable]
+    /// <summary>
+    /// OAuth error.
+    /// </summary>
     public class OAuthError
     {
-        // TODO - consider replacing with enum
-        // error type like "invalid_request"
+        /// <summary>
+        /// Error identifier.
+        /// </summary>
         public string error;
-        // TODO - consider localizing?
-        // human readable error description
+
+        /// <summary>
+        /// Human readable error description.
+        /// </summary>
         public string error_description;
     }
 }

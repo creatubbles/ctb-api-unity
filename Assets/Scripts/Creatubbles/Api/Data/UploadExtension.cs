@@ -39,14 +39,16 @@ namespace Creatubbles.Api
 		MP4,
 		M4V,
 		MOV,
-		UZPB,
-		Unknown
-        // TODO - add f4v?
-        // TODO - add zip?
+		UZPB
 	}
 
 	public static class UploadExtensionMethods
 	{
+        /// <summary>
+        /// Returns string representation of <c>UploadExtension</c>.
+        /// </summary>
+        /// <returns>The value.</returns>
+        /// <param name="uploadExtension">Upload extension.</param>
 		public static string StringValue(this UploadExtension uploadExtension)
 		{
 			switch (uploadExtension)
@@ -85,7 +87,12 @@ namespace Creatubbles.Api
 			}
 		}
 
-		public static UploadExtension FromString(string stringValue)
+        /// <summary>
+        /// Returns UploadExtension or null, if no matching value is found.
+        /// </summary>
+        /// <returns>Upload extension.</returns>
+        /// <param name="stringValue">String value.</param>
+		public static UploadExtension? FromString(string stringValue)
 		{
 			switch (stringValue)
 			{
@@ -119,7 +126,7 @@ namespace Creatubbles.Api
 				return UploadExtension.UZPB;
 
 			default: 
-				return UploadExtension.Unknown;
+				return null;
 			}
 		}
 	}

@@ -29,18 +29,34 @@ using UnityEngine;
 
 namespace Creatubbles.Api
 {
+    /// <summary>
+    /// Creatubbles API request providing parsed response as <c cref="ApiRequest.Data">Data</c> and API specific errors as <c cref="ApiRequest.apiErrors">apiErrors</c>.
+    /// </summary>
     public class ApiRequest<T>: HttpRequest
     {
-        // data from response body
+        /// <summary>
+        /// Parsed data from response body.
+        /// </summary>
+        /// <value>The data.</value>
         public T Data { get; private set; }
 
-        // contains the errors returned by the API
+        /// <summary>
+        /// Errors returned by the API.
+        /// </summary>
         public ApiError[] apiErrors;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.ApiRequest`1"/> class.
+        /// </summary>
+        /// <param name="webRequest">Web request.</param>
+        /// <param name="requestType">Request type.</param>
         public ApiRequest(UnityWebRequest webRequest, Type requestType): base(webRequest, requestType)
         {
         }
 
+        /// <summary>
+        /// Send the request.
+        /// </summary>
         override internal IEnumerator Send()
         {
             yield return base.Send();
@@ -62,6 +78,12 @@ namespace Creatubbles.Api
             Data = DeserializeJson<T>(ResponseBodyText);
         }
 
+        /// <summary>
+        /// Deserializes the JSON body.
+        /// </summary>
+        /// <returns>The deserialized response body.</returns>
+        /// <param name="json">JSON.</param>
+        /// <typeparam name="DeserializedType">Type of the parsed response.</typeparam>
         private static DeserializedType DeserializeJson<DeserializedType>(string json)
         {
             return JsonUtility.FromJson<DeserializedType>(json);

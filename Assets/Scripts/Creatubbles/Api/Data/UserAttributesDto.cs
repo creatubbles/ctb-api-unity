@@ -26,7 +26,6 @@ using System;
 
 namespace Creatubbles.Api
 {
-    // TODO - DateTime needs to be parsed separately
     [Serializable]
     public class UserAttributesDto
     {
@@ -49,13 +48,13 @@ namespace Creatubbles.Api
         public int creators_count;
         public int galleries_count;
         public int managers_count;
-        public DateTime last_bubbled_at;
-        public DateTime last_commented_at;
+        public string last_bubbled_at; // TODO - DateTime
+        public string last_commented_at; // TODO - DateTime
         public bool signed_up_as_instructor;
         public string what_do_you_teach;
         public string interests;
         public bool home_schooling;
-        public DateTime created_at;
-        public DateTime updated_at;
+        public string created_at; // TODO - DateTime
+        public string updated_at; // TODO - DateTime
     }
 }

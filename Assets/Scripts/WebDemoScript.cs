@@ -40,18 +40,17 @@ public class WebDemoScript: MonoBehaviour
     private CreatubblesApiClient creatubbles;
     private CreationUploadSession creationUploadSession;
 
-    // Use this for initialization
+    // Use this for initialization.
     void Start()
     {
         // configuration - in order for the API client to function properly it requires a simple configuration class containing information such as base URL, app ID and secret
-        //                 such class must be implementing IApiConfiguration inteface (see CreatubblesConfiguration for example and details)
-        // secureStorage - currently only InMemoryStorage is available but SDK user can provide his / her own implementation until a more secure option is available as part of the SDK
+        // secureStorage - currently only InMemoryStorage is available as part of the SDK, however user can provide his / her own implementation
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
 
         StartCoroutine(SendRequests());
     }
 	
-    // Update is called once per frame
+    // Update is called once per frame.
     void Update()
     {
         if (creationUploadSession != null)
@@ -76,7 +75,7 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
-    // example of getting landing URLs, logging in and uploading a creation
+    // Example of getting landing URLs, logging in and uploading a creation.
     IEnumerator SendRequests()
     {
         // get landing URLs (public request)
@@ -123,8 +122,8 @@ public class WebDemoScript: MonoBehaviour
         }
     }
 
-    // creates and sends a log in request, if successful saves the returned token in ISecureStorage instance
-    // after log in request is complete user profile is fetched from the API
+    // Creates and sends a log in request, if successful saves the returned token in ISecureStorage instance.
+    // After log in request is complete user profile is fetched from the API.
     IEnumerator LogIn(string username, string password)
     {
         OAuthRequest request = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
@@ -149,7 +148,7 @@ public class WebDemoScript: MonoBehaviour
         yield return GetLoggedInUser();
     }
 
-    // creates a new Creation entity and uploads an image with it
+    // Creates a new Creation entity and uploads an image with it.
     IEnumerator UploadCreation(string name)
     {
         byte[] imageData = texture.EncodeToPNG();
@@ -161,12 +160,13 @@ public class WebDemoScript: MonoBehaviour
 
         creationUploadSession = new CreationUploadSession(creationData);
 
+        Log("Uploading creation...");
         yield return creationUploadSession.Upload(creatubbles);
 
         // cancelling upload session will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
         if (creationUploadSession.IsCancelled)
         {
-            Debug.Log("Request cancelled by user");
+            Log("Request cancelled by user");
             yield break;
         }
 
@@ -185,7 +185,12 @@ public class WebDemoScript: MonoBehaviour
             {
                 Log("Internal error: " + creationUploadSession.InternalError);
             }
+
+            creationUploadSession = null;
+            yield break;
         }
+
+        Log("Creation uploaded successfully");
 
         creationUploadSession = null;
     }
@@ -194,7 +199,7 @@ public class WebDemoScript: MonoBehaviour
 
     #region Helper methods
 
-    // creates and sends request for fetching current user data (user must be already logged in, otherwise request will fail with 'unauthorized' error)
+    // Creates and sends request for fetching current user data (user must be already logged in, otherwise request will fail with 'unauthorized' error).
     IEnumerator GetLoggedInUser()
     {
         ApiRequest<LoggedInUserResponse> request = creatubbles.CreateGetLoggedInUserRequest();

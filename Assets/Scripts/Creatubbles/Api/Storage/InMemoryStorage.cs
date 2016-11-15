@@ -1,5 +1,5 @@
 ﻿//
-// ISecureStorage.cs
+// InMemoryStorage.cs
 // CreatubblesApiClient
 //
 // Copyright (c) 2016 Creatubbles Pte. Ltd.
@@ -22,18 +22,46 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 //
+
 using System;
+using System.Collections.Generic;
 using System.Collections;
 
 namespace Creatubbles.Api
 {
-    public interface ISecureStorage
+    /// <summary>
+    /// This storage class is not really a secure means of storing sensitive data and it should ONLY be used for development and testing.
+    /// For production an encrypted storage should be used instead.
+    /// Implementation of actual secure encrypted persistent storage is in progress.
+    /// </summary>
+    public class InMemoryStorage: ISecureStorage
     {
-        bool HasValue(string key);
-        string LoadValue(string key);
-        void SaveValue(string key, string value);
-        void DeleteValue(string key);
-        void Clear();
+        private static Dictionary<string, string> store = new Dictionary<string, string>();
+
+        public bool HasValue(string key)
+        {
+            return store.ContainsKey(key) && store[key] != null;
+        }
+
+        public string LoadValue(string key)
+        {
+            return store[key];
+        }
+
+        public void SaveValue(string key, string value)
+        {
+            store[key] = value;
+        }
+
+        public void DeleteValue(string key)
+        {
+            store.Remove(key);
+        }
+
+        public void Clear()
+        {
+            store.Clear();
+        }
     }
 }
 

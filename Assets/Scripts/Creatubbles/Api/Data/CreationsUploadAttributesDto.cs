@@ -31,15 +31,12 @@ namespace Creatubbles.Api
     {
         public string url;
         public string post_url;
-        public string content_type; // TODO - set upload request Content-Type header to this
-        public string ping_url; // TODO - ping this URL after upload finished
+        public string content_type;
+        public string ping_url;
         public string completed_at; // TODO - DateTime
         public bool aborted;
-        // "aborted_with": null, // TODO - what data type goes here?
         public bool processing_completed;
-        // "processing_details": null, // TODO - what data type goes here?
         public string created_at; // TODO - DateTime
         public string updated_at; // TODO - DateTime
     }
 }
-

@@ -1,5 +1,5 @@
 ﻿//
-// OAuthRequest.cs
+// ISecureStorage.cs
 // CreatubblesApiClient
 //
 // Copyright (c) 2016 Creatubbles Pte. Ltd.
@@ -21,65 +21,48 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-
+//
 using System;
-using UnityEngine.Networking;
-using UnityEngine;
 using System.Collections;
 
 namespace Creatubbles.Api
 {
     /// <summary>
-    /// OAuth request.
+    /// An interface for classes offering secure storage of persistent data like authentication tokens or user credentials.
     /// </summary>
-    public class OAuthRequest: HttpRequest
+    public interface ISecureStorage
     {
         /// <summary>
-        /// Data from response body.
+        /// Determines if value exists for specified key in the secure storage.
         /// </summary>
-        /// <value>The data.</value>
-        public OAuthTokenReponse Data { get; private set; }
+        /// <returns><c>true</c> value exists for specified key in the secure storage, otherwise, <c>false</c>.</returns>
+        /// <param name="key">Key.</param>
+        bool HasValue(string key);
 
         /// <summary>
-        /// Contains parsed HTTP errors.
+        /// Loads value for a specific key from the secure storage.
         /// </summary>
-        public OAuthError oAuthError;
+        /// <returns>The value.</returns>
+        /// <param name="key">Key.</param>
+        string LoadValue(string key);
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Creatubbles.Api.OAuthRequest"/> class.
+        /// Saves value for a specific key in the secure storage.
         /// </summary>
-        /// <param name="webRequest">Web request.</param>
-        public OAuthRequest(UnityWebRequest webRequest): base(webRequest, Type.Regular)
-        {
-        }
+        /// <param name="key">Key.</param>
+        /// <param name="value">Value.</param>
+        void SaveValue(string key, string value);
 
         /// <summary>
-        /// Send the request.
+        /// Deletes a value for a specific key from the secure storage.
         /// </summary>
-        override internal IEnumerator Send()
-        {
-            yield return base.Send();
-
-            // deserialize any API errors
-            if (IsHttpError)
-            {
-                oAuthError = DeserializeJson<OAuthError>(ResponseBodyText);
-                yield break;
-            }
-
-            // deserialize actual response body
-            Data = DeserializeJson<OAuthTokenReponse>(ResponseBodyText);
-        }
+        /// <param name="key">Key.</param>
+        void DeleteValue(string key);
 
         /// <summary>
-        /// Deserializes the JSON body.
+        /// Removes all values from the secure storage.
         /// </summary>
-        /// <returns>The deserialized response body.</returns>
-        /// <param name="json">JSON.</param>
-        /// <typeparam name="DeserializedType">Type of the parsed response.</typeparam>
-        private static DeserializedType DeserializeJson<DeserializedType>(string json)
-        {
-            return JsonUtility.FromJson<DeserializedType>(json);
-        }
+        void Clear();
     }
 }
+
