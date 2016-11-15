@@ -10,7 +10,7 @@ Supported platforms: iOS, macOS (and possibly others, not yet confirmed)
 Please note that library is still under development, and the SDK API is subject to change.
 
 ## Documentation
-[SDK API reference](https://github.com/creatubbles/ctb-api-unity/blob/master/Docs/reference/html/index.html)
+SDK API reference can be found in `Docs/reference/html/index.html` under repository main directory.
 
 ## Installation
 ### TODO
