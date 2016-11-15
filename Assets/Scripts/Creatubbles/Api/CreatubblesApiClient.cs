@@ -23,18 +23,16 @@
 //  THE SOFTWARE.
 
 using System;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Networking;
-using System.Collections;
+using Creatubbles.Api.Data;
 using Creatubbles.Api.Storage;
+using Creatubbles.Api.Requests;
 
 /// <summary>
-/// Contains classes and interface used for communicating with Creatubbles API.
+/// Contains classes and interfaces used in communicating with Creatubbles API.
 /// </summary>
-using Creatubbles.Api.Requests;
-using Creatubbles.Api.Data;
-
-
 namespace Creatubbles.Api
 {
     /// <summary>

@@ -1,18 +1,25 @@
 [![](https://stateoftheart.creatubbles.com/wp-content/uploads/2015/01/ctb_home_logo.png)](https://www.creatubbles.com/)
 
 ## Creatubbles API Client Unity SDK
-CreatubblesApiClient is a simple library built to help you communicate with the latest [Creatubbles API](https://stateoftheart.creatubbles.com/api/). It works with Unity version 5.4.x and newer.
+Creatubbles API Client Unity SDK is a simple library built to help you communicate with the latest [Creatubbles API](https://stateoftheart.creatubbles.com/api/).
 
-Please note, that library is still under heavy development, and interface may change.
+Current SDK version: 0.1  
+Supported Unity versions: 5.4.x and newer  
+Supported platforms: iOS, macOS (and possibly others, not yet confirmed)
 
-## Author
-[Creatubbles](https://www.creatubbles.com/)
+Please note that library is still under development, and the SDK API is subject to change.
+
+## Documentation
+[SDK API reference](https://github.com/creatubbles/ctb-api-unity/blob/master/Docs/reference/html/index.html)
 
 ## Installation
 ### TODO
 
 ## QuickStart
 ### TODO
+
+## Author
+[Creatubbles](https://www.creatubbles.com/)
 
 ## Contact
 In order to receive your AppId and AppSecret please contact us at <support@creatubbles.com>.
