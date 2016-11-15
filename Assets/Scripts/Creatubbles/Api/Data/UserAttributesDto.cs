@@ -1,6 +1,6 @@
 ﻿//
 //  UserAttributesDto.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,8 +24,14 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// User attributes data transfer object.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#user-details.
+    /// </remarks>
     [Serializable]
     public class UserAttributesDto
     {

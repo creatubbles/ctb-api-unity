@@ -24,12 +24,15 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
-    [Serializable]
     /// <summary>
     /// OAuth error.
     /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#authentication.
+    /// </remarks>
+    [Serializable]
     public class OAuthError
     {
         /// <summary>

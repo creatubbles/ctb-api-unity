@@ -25,7 +25,10 @@
 using System;
 using System.Collections;
 
-namespace Creatubbles.Api
+/// <summary>
+/// Contains classes and interfaces used for persisting and caching data like OAuth tokens or user profile.
+/// </summary>
+namespace Creatubbles.Api.Storage
 {
     /// <summary>
     /// An interface for classes offering secure storage of persistent data like authentication tokens or user credentials.
@@ -35,7 +38,7 @@ namespace Creatubbles.Api
         /// <summary>
         /// Determines if value exists for specified key in the secure storage.
         /// </summary>
-        /// <returns><c>true</c> value exists for specified key in the secure storage, otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> value exists for specified key in the secure storage, otherwise <c>false</c>.</returns>
         /// <param name="key">Key.</param>
         bool HasValue(string key);
 

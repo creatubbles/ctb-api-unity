@@ -33,45 +33,40 @@ namespace Creatubbles.Api
     public interface IApiConfiguration
     {
         /// <summary>
-        /// API base URL.
-        /// <list type="bullet">
-        ///     <listheader>
-        ///         <term>Should contain:</term>
-        ///     </listheader>
-        ///     <item>
-        ///         <description><see href="https://api.staging.creatubbles.com">https://api.staging.creatubbles.com</see> for <c>Debug</c> builds</description>
-        ///     </item>
-        ///     <item>
-        ///         <description><see href="https://api.creatubbles.com">https://api.creatubbles.com</see> for <c>Release</c> builds</description>
-        ///     </item>
-        /// </list>
+        /// Base API URL.
         /// </summary>
-        /// <value>The base API URL.</value>
+        /// <value>Should be set to https://api.staging.creatubbles.com in <c>Debug</c> builds and to https://api.creatubbles.com in <c>Release</c> builds.</value>
         string BaseUrl { get; }
 
         /// <summary>
-        /// Personal application identifier. Please contact support@creatubbles.com to obtain it.
+        /// Personal application identifier.
         /// </summary>
-        /// <value>The app identifier.</value>
+        /// <remarks>
+        /// Please contact support@creatubbles.com to obtain it.
+        /// </remarks>
         string AppId { get; }
 
         /// <summary>
-        /// Personal application secret. Please contact support@creatubbles.com to obtain it.
+        /// Personal application secret.
         /// </summary>
-        /// <value>The app secret.</value>
+        /// <remarks>
+        /// Please contact support@creatubbles.com to obtain it.
+        /// </remarks>
         string AppSecret { get; }
 
         /// <summary>
-        /// API version string. For example "v2".
+        /// API version.
         /// </summary>
-        /// <value>The API version.</value>
+        /// <value>Should contain a valid version string like "v1" or "v2".</value>
         string ApiVersion { get; }
 
         /// <summary>
-        /// Locale code used for getting localized responses from servers. Example values: “en”, “pl”, “de”. Can be null.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#locales">https://stateoftheart.creatubbles.com/api/#locales</see>.
+        /// Locale code used for getting localized responses from the server.
         /// </summary>
-        /// <value>The locale.</value>
+        /// <remarks>
+        /// More info at https://stateoftheart.creatubbles.com/api/#locales.
+        /// </remarks>
+        /// <value>Should contain values like “en”, “pl”, “de”. Can be <c>null</c>.</value>
         string Locale { get; }
     }
 }

@@ -1,6 +1,6 @@
 ﻿//
 //  WebDemoScript.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -30,6 +30,9 @@ using UnityEngine.Serialization;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using Creatubbles.Api;
+using Creatubbles.Api.Storage;
+using Creatubbles.Api.Requests;
+using Creatubbles.Api.Data;
 
 public class WebDemoScript: MonoBehaviour
 {

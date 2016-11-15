@@ -1,6 +1,6 @@
 ﻿//
 //  UserDto.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,24 +24,22 @@
 
 using System;
 
-namespace Creatubbles.Api
+/// <summary>
+/// Contains classes and interfaces representing data returned by the API.
+/// </summary>
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// User data transfer object.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#user-details.
+    /// </remarks>
     [Serializable]
     public class UserDto
     {
         public string type;
         public string id;
         public UserAttributesDto attributes;
-
-        // TODO - relationships
-        //    "relationships": {
-        //        "school":{"data":null},
-        //        "custom_style": {"data":null}
-        //    }
-
-        override public string ToString()
-        {
-            return "{ Id: " + id + ", username: " + attributes.username + ", created_at: " + attributes.created_at + " }";
-        }
     }
 }

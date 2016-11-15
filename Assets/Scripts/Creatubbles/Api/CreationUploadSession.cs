@@ -1,6 +1,6 @@
 ﻿//
 //  CreationUploadSession.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -25,13 +25,17 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using Creatubbles.Api.Data;
+using Creatubbles.Api.Requests;
 
 namespace Creatubbles.Api
 {
     /// <summary>
     /// Performs series of requests allocating creation, uploading file, updating creation and notifying backend when operation finishes.
-    /// More info at <see href="https://stateoftheart.creatubbles.com/api/#creation-upload">https://stateoftheart.creatubbles.com/api/#creation-upload</see>.
     /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#creation-upload.
+    /// </remarks>
     public class CreationUploadSession: ICancellable
     {
         private const string InternalErrorMissingOrInvalidResponseData = "Invalid or missing data in reponse body.";
@@ -43,7 +47,7 @@ namespace Creatubbles.Api
         private NewCreationData creationData;
 
         /// <summary>
-        /// Upload request is stored in instance variable as data source for UploadProgress.
+        /// Upload request is stored in instance variable as data source for <see cref="CreationUploadSession.UploadProgress"/>.
         /// </summary>
         private HttpRequest uploadRequest;
 
@@ -55,21 +59,23 @@ namespace Creatubbles.Api
         /// <summary>
         /// Indicates whether upload session is finished.
         /// </summary>
-        /// <value><c>true</c> if all requests completed or error was encountered, otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if all requests completed, upload was cancelled or an error occured, otherwise <c>false</c>.</value>
         public bool IsDone { get; private set; }
 
         /// <summary>
         /// Determines if session was cancelled.
         /// </summary>
         /// <value><c>true</c> if session was cancelled, otherwise <c>false</c>.</value>
-        /// <see cref="ICancellable.Cancel()"></see>
+        /// <see cref="ICancellable.Cancel()"/>
         /// <c>false</c>
         public bool IsCancelled { get; private set; }
 
         /// <summary>
         /// Indicates whether a system error occured.
-        /// More info at <see href="https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html">https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html</see>.
         /// </summary>
+        /// <remarks>
+        /// More info at https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html.
+        /// </remarks>
         /// <value><c>true</c> if Unity encountered a system error like no internet connection, socket errors, errors resolving DNS entries, or the redirect limit being exceeded, otherwise <c>false</c>.</value>
         public bool IsSystemError { get; private set; }
 
@@ -82,7 +88,7 @@ namespace Creatubbles.Api
         /// <summary>
         /// Indicates whether an API error occured.
         /// </summary>
-        /// <value><c>true</c> if request ended with an error like HTTP status 4xx or 5xx, otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if request ended with an error like HTTP status 4xx or 5xx, otherwise <c>false</c>.</value>
         public bool IsApiError { get; private set; }
 
         /// <summary>
@@ -92,25 +98,30 @@ namespace Creatubbles.Api
         public ApiError[] ApiErrors { get; private set; }
 
         /// <summary>
-        /// Indicates whether this an internal error has occured.
-        /// Internal errors are not user-recoverable as they usually indicate an issue with implementation (client or backend) e.g. "Something went wrong" kind of error.
+        /// Indicates whether an internal error has occured.
         /// </summary>
-        /// <value><c>true</c> if some client implementation or internal API issue occured like failed data mapping or malformed response, otherwise <c>false</c>.</value>
+        /// <remarks>
+        /// Internal errors are not user-recoverable as they usually indicate an issue with implementation (client or backend) e.g. "Something went wrong" kind of error.
+        /// </remarks>
+        /// <value><c>true</c> if some client implementation or internal API issue occured like a failed data mapping or malformed response, otherwise <c>false</c>.</value>
         public bool IsInternalError { get; private set; }
 
         /// <summary>
-        /// Gets the internal error, which represents malformed response, parsing error or other unexpected failure.
+        /// Gets the internal error message, which describes malformed response, parsing error or other unexpected failure.
         /// </summary>
         /// <value>The internal error.</value>
         public string InternalError { get; private set; }
 
-        // true when either system, API or internal errors occured
+        /// <summary>
+        /// Indicates whether any error occured during upload session.
+        /// </summary>
+        /// <value><c>true</c> if system, API or internal errors occured, otherwise <c>false</c>.</value>
         public bool IsAnyError { get { return IsSystemError || IsApiError || IsInternalError; } }
 
         /// <summary>
         /// Gets the upload progress.
         /// </summary>
-        /// <value>The upload progress in range <0;1>.</value>
+        /// <value>The upload progress in range <c><0;1></c>.</value>
         public float UploadProgress { get { return uploadRequest == null ? 0 : uploadRequest.UploadProgress; } }
 
         /// <summary>
@@ -126,7 +137,7 @@ namespace Creatubbles.Api
         /// <summary>
         /// Triggers series of requests forming new creation entity, uploading file, updating creation with uploaded file's URL and notifying server when upload is finished.
         /// </summary>
-        /// <param name="creatubbles">Creatubbles.</param>
+        /// <param name="creatubbles">Creatubbles API Client instance.</param>
         public IEnumerator Upload(CreatubblesApiClient creatubbles)
         {
             ResetFlagsAndFields();
@@ -262,7 +273,7 @@ namespace Creatubbles.Api
         /// <summary>
         /// Notifies the backend that file upload is finished, regardless whether it completed successfully or with errors.
         /// </summary>
-        /// <returns>The file upload finished <c>request.Send()</c> enumerator.</returns>
+        /// <returns>Enumerator.</returns>
         /// <param name="creatubbles">Creatubbles.</param>
         /// <param name="pingUrl">The URL to which the notification request should be sent.</param>
         /// <param name="abortedWithMessage">Should be set to <c>null</c> if request was successful, to body of the response in case of errors and to '<c>user</c>' in case of upload being cancelled by user.</param>

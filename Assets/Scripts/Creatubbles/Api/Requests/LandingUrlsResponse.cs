@@ -1,6 +1,6 @@
 ﻿//
 //  LandingUrlsResponse.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -23,9 +23,16 @@
 //  THE SOFTWARE.
 
 using System;
+using Creatubbles.Api.Data;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Landing urls response.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#list-landing-urls.
+    /// </remarks>
     [Serializable]
     public class LandingUrlsResponse
     {

@@ -1,6 +1,6 @@
 ﻿//
 //  CreationDto.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,19 +24,20 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// Creation data transfer object.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#creation-details.
+    /// </remarks>
     [Serializable]
     public class CreationDto
     {
         public string id;
         public string type;
         public CreationAttributesDto attributes;
-
-        public override string ToString()
-        {
-            return "{id: " + id + ", type: " + type + ", name: " + attributes.name + " }";
-        }
     }
 }
 

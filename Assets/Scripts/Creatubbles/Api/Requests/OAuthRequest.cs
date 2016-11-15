@@ -27,11 +27,14 @@ using UnityEngine.Networking;
 using UnityEngine;
 using System.Collections;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
     /// <summary>
     /// OAuth request.
     /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#authentication.
+    /// </remarks>
     public class OAuthRequest: HttpRequest
     {
         /// <summary>

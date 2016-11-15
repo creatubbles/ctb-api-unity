@@ -1,6 +1,6 @@
 ﻿//
 //  ApiErrorResponse.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -26,8 +26,14 @@ using System;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// API error response.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://partners.creatubbles.com/api/#errors and http://jsonapi.org/format/#error-objects.
+    /// </remarks>
     [Serializable]
     public class ApiErrorResponse
     {

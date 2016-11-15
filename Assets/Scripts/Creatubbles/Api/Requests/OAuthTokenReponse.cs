@@ -1,6 +1,6 @@
 ﻿//
 //  OAuthTokenReponse.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,8 +24,14 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Represents OAuth response with access token.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#authentication.
+    /// </remarks>
     [Serializable]
     public class OAuthTokenReponse
     {

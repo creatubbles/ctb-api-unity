@@ -1,6 +1,6 @@
 ﻿//
 //  CreationsUploadAttributesDto.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,8 +24,14 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// Creations upload attributes data transfer object.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#create-creation-upload.
+    /// </remarks>
     [Serializable]
     public class CreationsUploadAttributesDto
     {

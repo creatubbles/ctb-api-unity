@@ -1,6 +1,6 @@
 ﻿//
 //  LandingUrlDto.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,19 +24,19 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// Landing URL data transfer object.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#list-landing-urls.
+    /// </remarks>
     [Serializable]
     public class LandingUrlDto
     {
         public string id;
         public string type;
-        // TODO - enum?
         public LandingUrlAttributesDto attributes;
-
-        override public string ToString()
-        {
-            return "{ Id: " + id + ", type: " + type + ", attributes: " + attributes.url + " }";
-        }
     }
 }

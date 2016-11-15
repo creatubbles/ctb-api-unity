@@ -1,6 +1,6 @@
 ﻿//
 //  CreatubblesApiClient.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -26,12 +26,23 @@ using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using System.Collections;
+using Creatubbles.Api.Storage;
+
+/// <summary>
+/// Contains classes and interface used for communicating with Creatubbles API.
+/// </summary>
+using Creatubbles.Api.Requests;
+using Creatubbles.Api.Data;
+
 
 namespace Creatubbles.Api
 {
     /// <summary>
-    /// This class for creating and sending Creatubbles API requests.
+    /// This is the main class of Creatubbles API Client Unity SDK used for creating and sending Creatubbles API requests.
     /// </summary>
+    /// <remarks>
+    /// Official documentation at https://stateoftheart.creatubbles.com/api/.
+    /// </remarks>
     public class CreatubblesApiClient
     {
         private const string AppAccessTokenKey = "ctb_app_access_token";
@@ -54,10 +65,10 @@ namespace Creatubbles.Api
         #region Methods for sending requests and managing user session
 
         /// <summary>
-        /// Sends log in request and saves the token to ISecureStorage instance if successful.
+        /// Sends log in request and saves the token to secure storage if successful.
         /// </summary>
-        /// <returns>Request.Send() enumerator.</returns>
-        /// <param name="request">Log in request to be sent.</param>
+        /// <returns>Enumerator.</returns>
+        /// <param name="request">Log in request.</param>
         public IEnumerator SendLogInRequest(OAuthRequest request)
         {
             SetAcceptLanguageHeader(request);
@@ -70,14 +81,16 @@ namespace Creatubbles.Api
             }
 
             secureStorage.SaveValue(UserAccessTokenKey, request.Data.access_token);
-            Debug.Log("logged in and saved token: " + request.Data.access_token);
         }
 
         /// <summary>
-        /// Attempts to send the request. Will fail with unathorized error, if request requires application or user authorization token and it isn't found in secure storage.
+        /// Attempts to send the request.
         /// </summary>
-        /// <returns>Request.Send() enumerator.</returns>
-        /// <param name="request">Request to be sent.</param>
+        /// <remarks>
+        /// Will fail with unathorized error, if request requires application or user authorization token and one isn't found in secure storage.
+        /// </remarks>
+        /// <returns>Enumerator.</returns>
+        /// <param name="request">Request.</param>
         public IEnumerator SendRequest(HttpRequest request)
         {
             SetAcceptLanguageHeader(request);
@@ -99,10 +112,13 @@ namespace Creatubbles.Api
         }
 
         /// <summary>
-        /// Attempts to send request with user OAuth token. Will fail with unathorized error, if token was not found.
+        /// Attempts to send request with user OAuth token.
         /// </summary>
-        /// <returns>Request.Send() enumerator.</returns>
-        /// <param name="request">Request to be sent.</param>
+        /// <remarks>
+        /// Will fail with unathorized error, if token was not found.
+        /// </remarks>
+        /// <returns>Enumerator.</returns>
+        /// <param name="request">Request.</param>
         private IEnumerator SendPrivateRequest(HttpRequest request)
         {
             string accessToken = null;
@@ -116,10 +132,13 @@ namespace Creatubbles.Api
         }
 
         /// <summary>
-        /// Attempts to send request with application OAuth token. Will fail with unathorized error, if token was not found.
+        /// Attempts to send request with application OAuth token.
         /// </summary>
-        /// <returns>Request.Send() enumerator.</returns>
-        /// <param name="request">Request to be sent.</param>
+        /// <remarks>
+        /// Will fail with unathorized error, if token was not found.
+        /// </remarks>
+        /// <returns>Enumerator.</returns>
+        /// <param name="request">Request.</param>
         private IEnumerator SendPublicRequest(HttpRequest request)
         {
             string accessToken = null;
@@ -148,8 +167,8 @@ namespace Creatubbles.Api
         /// <summary>
         /// Sends unmodified request.
         /// </summary>
-        /// <returns>Request.Send() enumerator.</returns>
-        /// <param name="request">Request to be sent.</param>
+        /// <returns>Enumerator.</returns>
+        /// <param name="request">Request.</param>
         private IEnumerator SendRegularRequest(HttpRequest request)
         {
             yield return request.Send();
@@ -180,9 +199,11 @@ namespace Creatubbles.Api
         #region Requests factory methods
 
         /// <summary>
-        /// Creates OAuth application token request.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow">https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow</see>
+        /// Creates Creatubbles OAuth application token request.
         /// </summary>
+        /// <remarks>
+        /// More info at https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow.
+        /// </remarks>
         /// <returns>OAuth application token request.</returns>
         private OAuthRequest CreatePostAuthenticationApplicationTokenRequest()
         {
@@ -199,12 +220,14 @@ namespace Creatubbles.Api
         }
 
         /// <summary>
-        /// Creates OAuth log in request.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow">https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow</see>
+        /// Creates Creatubbles OAuth log in request.
         /// </summary>
+        /// <remarks>
+        /// More info at https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow.
+        /// </remarks>
         /// <returns>OAuth log in request.</returns>
-        /// <param name="username">Username.</param>
-        /// <param name="password">Password.</param>
+        /// <param name="username">User's Creatubbles account username.</param>
+        /// <param name="password">User's Creatubbles account password.</param>
         public OAuthRequest CreatePostAuthenticationUserTokenRequest(string username, string password)
         {
             string url = RequestUrl("/oauth/token");
@@ -223,10 +246,18 @@ namespace Creatubbles.Api
 
         /// <summary>
         /// Retrieve all landing URLs (besides creation landing URLs) for a specific application or user.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#list-landing-urls">https://stateoftheart.creatubbles.com/api/#list-landing-urls</see>
         /// </summary>
-        /// <returns>The get landing urls request.</returns>
-        /// <param name="requestType">Request type. <c>Public</c> will return application specific URLs while <c>Private</c> will return user specific URLs (user must be logged in first). <c>Regular</c> will cause request to fail.</param>
+        /// <remarks>
+        /// More info at https://stateoftheart.creatubbles.com/api/#list-landing-urls.
+        /// </remarks>
+        /// <returns>The get landing URLs request.</returns>
+        /// <param name="requestType">
+        ///     <list type="bullet">
+        ///         <item><c>Public</c> request will return application specific URLs.</item>
+        ///         <item><c>Private</c> request will return user specific URLs (user must be logged in first).</item>
+        ///         <item><c>Regular</c> request will cause request to fail.</item>
+        ///     </list>
+        /// </param>
         public ApiRequest<LandingUrlsResponse> CreateGetLandingUrlsRequest(HttpRequest.Type requestType = HttpRequest.Type.Public)
         {
             string url = RequestUrl("/landing_urls");
@@ -238,8 +269,10 @@ namespace Creatubbles.Api
 
         /// <summary>
         /// Creates request to get logged in user’s profile.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#get-user-39-s-profile">https://stateoftheart.creatubbles.com/api/#get-user-39-s-profile</see>
         /// </summary>
+        /// <remarks>
+        /// More info at https://stateoftheart.creatubbles.com/api/#get-user-39-s-profile.
+        /// </remarks>
         /// <returns>The get logged in user request.</returns>
         public ApiRequest<LoggedInUserResponse> CreateGetLoggedInUserRequest()
         {
@@ -252,9 +285,11 @@ namespace Creatubbles.Api
 
         /// <summary>
         /// Creates the create creation request.
-        /// This request will return new created creation object with ID.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#create-creation">https://stateoftheart.creatubbles.com/api/#create-creation</see>
         /// </summary>
+        /// <remarks>
+        /// Response will contain newly created creation object with ID.
+        /// More info at https://stateoftheart.creatubbles.com/api/#create-creation.
+        /// </remarks>
         /// <returns>The request to create creation.</returns>
         /// <param name="creationData">Creation data.</param>
         public ApiRequest<CreationGetResponse> CreateNewCreationRequest(NewCreationData creationData)
@@ -295,8 +330,10 @@ namespace Creatubbles.Api
 
         /// <summary>
         /// Creates request to get specific creation.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#get-specific-creation">https://stateoftheart.creatubbles.com/api/#get-specific-creation</see>.
         /// </summary>
+        /// <remarks>
+        /// More info at https://stateoftheart.creatubbles.com/api/#get-specific-creation.
+        /// </remarks>
         /// <returns>The request to get specific creation.</returns>
         /// <param name="creationId">Creation ID.</param>
         public ApiRequest<CreationGetResponse> CreateGetCreationRequest(string creationId)
@@ -309,10 +346,13 @@ namespace Creatubbles.Api
         }
 
         /// <summary>
-        /// Creates request that retrieves all information required to upload a new image. You can use this also to upload updated versions of a creation.
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#create-creation-upload">https://stateoftheart.creatubbles.com/api/#create-creation-upload</see>.
+        /// Creates request that retrieves all information required to upload a new image.
         /// </summary>
-        /// <returns>The request for retrieving upload information</returns>
+        /// <remarks>
+        /// You can use this also to upload updated versions of a creation.
+        /// More info at https://stateoftheart.creatubbles.com/api/#create-creation-upload.
+        /// </remarks>
+        /// <returns>The request for retrieving upload information.</returns>
         /// <param name="creationId">ID of creation for which to retrieve upload information.</param>
         /// <param name="extension">Extension of file to be uploaded.</param>
         public ApiRequest<CreationsUploadPostResponse> CreatePostCreationUploadRequest(string creationId, UploadExtension extension)
@@ -332,7 +372,7 @@ namespace Creatubbles.Api
         /// </summary>
         /// <returns>The upload file request.</returns>
         /// <param name="url">Absolute URL to which data should be uploaded.</param>
-        /// <param name="contentType">Value that will be set in Content-type header.</param>
+        /// <param name="contentType">Value that will be set in <c>Content-Type</c> header.</param>
         /// <param name="data">Data to be uploaded.</param>
         public HttpRequest CreateUploadFileRequest(string url, string contentType, byte[] data)
         {
@@ -358,9 +398,11 @@ namespace Creatubbles.Api
 
         /// <summary>
         /// Creates update creation upload request.
-        /// This request notifies server that upload has finished (successfully or not).
-        /// More info at <see href="https://stateoftheart.creatubbles.com/api/#update-creation-upload">https://stateoftheart.creatubbles.com/api/#update-creation-upload</see>.
         /// </summary>
+        /// <remarks>
+        /// This request notifies server that upload has finished (successfully or not).
+        /// More info at https://stateoftheart.creatubbles.com/api/#update-creation-upload.
+        /// </remarks>
         /// <returns>The update creation upload request.</returns>
         /// <param name="pingUrl">Absolute URL containing upload ID.</param>
         /// <param name="abortedWithMessage">Argument included when upload fails. Include the body returned by the failed upload attempt or ‘user’ in case the user aborted the upload.</param>
@@ -408,7 +450,7 @@ namespace Creatubbles.Api
         }
 
         /// <summary>
-        /// Sets the Accept-language header to locale supplied in configuration.
+        /// Sets the <c>Accept-Language</c> header to locale supplied in configuration.
         /// </summary>
         /// <param name="request">Request to set the header for.</param>
         private void SetAcceptLanguageHeader(HttpRequest request)

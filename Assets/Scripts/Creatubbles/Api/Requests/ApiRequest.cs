@@ -1,6 +1,6 @@
 ﻿//
 //  ApiRequest.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -27,11 +27,14 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
     /// <summary>
-    /// Creatubbles API request providing parsed response as <c cref="ApiRequest.Data">Data</c> and API specific errors as <c cref="ApiRequest.apiErrors">apiErrors</c>.
+    /// Creatubbles API request.
     /// </summary>
+    /// <remarks>
+    /// On completion reports parsed response as <c cref="ApiRequest.Data">Data</c> and API specific errors as <c cref="ApiRequest.apiErrors">apiErrors</c>.
+    /// </remarks>
     public class ApiRequest<T>: HttpRequest
     {
         /// <summary>
@@ -46,7 +49,7 @@ namespace Creatubbles.Api
         public ApiError[] apiErrors;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Creatubbles.Api.ApiRequest`1"/> class.
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.ApiRequest`1"/> class.
         /// </summary>
         /// <param name="webRequest">Web request.</param>
         /// <param name="requestType">Request type.</param>
@@ -69,7 +72,6 @@ namespace Creatubbles.Api
             // deserialize any API errors
             if (IsHttpError)
             {
-                Debug.Log("Raw error body: " + ResponseBodyText);
                 apiErrors = DeserializeJson<ApiErrorResponse>(ResponseBodyText).errors;
                 yield break;
             }

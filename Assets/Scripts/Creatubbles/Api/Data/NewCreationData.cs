@@ -1,6 +1,6 @@
 ﻿//
 //  NewCreationData.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,30 +24,100 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// New creation data.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#creation-details and https://stateoftheart.creatubbles.com/api/#create-creation.
+    /// </remarks>
     [Serializable]
 	public class NewCreationData
 	{
+        /// <summary>
+        /// The data to be uploaded with new creation.
+        /// </summary>
+        /// <remarks>
+        /// Is mutually exclusive with <see cref="NewCreationData.url"/>.
+        /// </remarks>
         public readonly byte[] data;
+
+        /// <summary>
+        /// Absolute URL of the file to be uploaded with new creation.
+        /// </summary>
+        /// <remarks>
+        /// Is mutually exclusive with <see cref="NewCreationData.data"/>.
+        /// </remarks>
         public readonly string url;
+
+        /// <summary>
+        /// Extension of the file passed as <see cref="NewCreationData.data"/> or <see cref="NewCreationData.url"/>. 
+        /// </summary>
         public readonly UploadExtension uploadExtension;
 
+        /// <summary>
+        /// The creation identifier.
+        /// </summary>
 		public string creationId;
+
+        /// <summary>
+        /// The creation name.
+        /// </summary>
 		public string name;
+
+        /// <summary>
+        /// User’s “reflection” / “comment” about the creation.
+        /// </summary>
 		public string reflectionText;
+
+        /// <summary>
+        /// Link to video on creation process, has to be a valid URL.
+        /// </summary>
 		public string reflectionVideoUrl;
+
+        /// <summary>
+        /// The gallery identifier.
+        /// </summary>
 		public string galleryId;
+
+        /// <summary>
+        /// The creators' identifiers.
+        /// </summary>
 		public string[] creatorIds;
+
+        /// <summary>
+        /// The creation year.
+        /// </summary>
+        /// /// <remarks>
+        /// Can be <c>null</c>
+        /// </remarks>
         public int? creationYear;
+
+        /// <summary>
+        /// The creation month.
+        /// </summary>
+        /// <remarks>
+        /// Can be <c>null</c>
+        /// </remarks>
         public int? creationMonth;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.NewCreationData"/> class.
+        /// </summary>
+        /// <param name="data">Data representing file to be uploaded with the new creation.</param>
+        /// <param name="extension">Extension of the file to be uploaded with new creation.</param>
         public NewCreationData(byte[] data, UploadExtension extension)
         {
             this.data = data;
             this.uploadExtension = extension;
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.NewCreationData"/> class.
+        /// </summary>
+        /// <param name="url">URL of the file to be uploaded with the new creation..</param>
+        /// <param name="extension">Extension of the file to be uploaded with new creation.</param>
         public NewCreationData(string url, UploadExtension extension)
         {
             this.url = url;

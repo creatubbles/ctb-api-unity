@@ -1,6 +1,6 @@
 ﻿//
 //  CreationAttributesDto.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -24,23 +24,23 @@
 
 using System;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Data
 {
+    /// <summary>
+    /// Creation attributes data transfer object.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#creation-details.
+    /// </remarks>
     [Serializable]
     public class CreationAttributesDto
     {
         public string name;
         public bool approved;
-        public string approval_status; // TODO - enum - Possible values: “approved”, “unapproved”, “rejected”
+        public string approval_status; // TODO - enum
         public string created_at_age;
-        // JsonUtility doesn't support dictionaries yet, need to use different deserializer to support below
-//        public created_at_age_per_creator;
-//        {
-//            "oCRxzp9F": "at 14y",
-//            "vff379a2": "at 9y"
-//        },
-        public string image; // TODO - expand to object - see iOS
-        public int image_status; // TODO - enum - 1: “empty”; 2: “processing”; 3: “ready”
+        public string image; // TODO - object
+        public int image_status; // TODO - enum
         public int bubbles_count;
         public int comments_count;
         public int views_count;
@@ -49,7 +49,6 @@ namespace Creatubbles.Api
         public string last_submitted_at; // TODO - DateTime
         public string short_url;
         public string created_at; // TODO - DateTime
-        // TODO - for more attributes see https://stateoftheart.creatubbles.com/api/#creation-details
     }
 }
 

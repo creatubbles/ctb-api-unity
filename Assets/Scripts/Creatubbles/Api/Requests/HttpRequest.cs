@@ -1,6 +1,6 @@
 ﻿//
 //  HttpRequest.cs
-//  CreatubblesApiClient
+//  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
 //
@@ -27,7 +27,7 @@ using UnityEngine.Networking;
 using System.Collections;
 using UnityEngine;
 
-namespace Creatubbles.Api
+namespace Creatubbles.Api.Requests
 {
     /// <summary>
     /// Class representing an HTTP request, which serves as wrapper around <c>UnityWebRequest</c>.
@@ -43,10 +43,12 @@ namespace Creatubbles.Api
             /// Public requests must be authorized with application OAuth token.
             /// </summary>
             Public,
+
             /// <summary>
             /// Private requests must be authorized with user OAuth token.
             /// </summary>
             Private,
+
             /// <summary>
             /// Regular requests do not require OAuth authorization.
             /// </summary>
@@ -64,22 +66,26 @@ namespace Creatubbles.Api
 
         /// <summary>
         /// Indicates whether a system error occured.
-        /// More info at <see href="https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html">https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html</see>.
         /// </summary>
+        /// <remarks>
+        /// More info at https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-isError.html.
+        /// </remarks>
         /// <value><c>true</c> if Unity encountered a system error like no internet connection, socket errors, errors resolving DNS entries, or the redirect limit being exceeded, otherwise <c>false</c>.</value>
         public bool IsSystemError { get { return webRequest.isError; } }
 
         /// <summary>
         /// Gets the system error.
-        /// More info at <see href="https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-error.html">https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-error.html</see>
         /// </summary>
+        /// <remarks>
+        /// More info at https://docs.unity3d.com/ScriptReference/Networking.UnityWebRequest-error.html.
+        /// </remarks>
         /// <value>The system error.</value>
         public string SystemError { get { return webRequest.error; } }
 
         /// <summary>
         /// Indicating whether an Http error occured.
         /// </summary>
-        /// <value><c>true</c> if request is done, not cancelled, but response code represents failure, otherwise <c>false</c>.</value>
+        /// <value><c>true</c> if request is done, not cancelled and response code represents failure, otherwise <c>false</c>.</value>
         public bool IsHttpError { get { return IsDone && !IsCancelled && !IsNonFailureHttpStatus; } }
 
         /// <summary>
@@ -89,7 +95,7 @@ namespace Creatubbles.Api
         public string RawHttpError { get { return ResponseBodyText; } }
 
         /// <summary>
-        /// Gets a value indicating whether this instance is any error.
+        /// Gets a value indicating whether any errors have occured during request.
         /// </summary>
         /// <value><c>true</c> if System or HTTP error occured, otherwise <c>false</c>.</value>
         public bool IsAnyError { get { return IsSystemError || IsHttpError; } }
@@ -123,20 +129,20 @@ namespace Creatubbles.Api
         /// <summary>
         /// Gets the upload progress.
         /// </summary>
-        /// <value>The upload progress in rage <0;1>.</value>
+        /// <value>The upload progress in rage <c><0;1></c>.</value>
         public float UploadProgress { get { return webRequest.uploadProgress; } }
 
         /// <summary>
         /// Gets the download progress.
         /// </summary>
-        /// <value>The download progress in range <0;1>.</value>
+        /// <value>The download progress in range <c><0;1></c>.</value>
         public float DownloadProgress { get { return webRequest.downloadProgress; } }
 
         // true for HTTP statuses from 200 to 399
         /// <summary>
         /// Determines if HTTP status is a non-failure one (in range of <200;399>).
         /// </summary>
-        /// <value><c>true</c> in range of <200;399>, otherwise <c>false</c>.</value>
+        /// <value><c>true</c> in range of <c><200;399></c>, otherwise <c>false</c>.</value>
         public bool IsNonFailureHttpStatus { get { return 200 <= ResponseCode && ResponseCode <= 399; } }
 
         /// <summary>
