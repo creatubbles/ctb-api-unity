@@ -1,5 +1,5 @@
 ﻿//
-//  CreatubblesApiDemo.cs
+//  UploadDemo.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
@@ -34,16 +34,27 @@ using Creatubbles.Api.Storage;
 using Creatubbles.Api.Requests;
 using Creatubbles.Api.Data;
 
-public class CreatubblesApiDemo: MonoBehaviour
+public class UploadDemo: MonoBehaviour
 {
-    
+    private const string StatusUploading = "Uploading...";
+    private const string StatusSuccess = "Success";
+    private const string StatusFailure = "Failed";
+    private const string StatusCancelled = "Cancelled";
 
-    public Text textControl;
-    public Text progressText;
-    public Texture2D texture;
+    public Image progressImage;
+    public InputField creationNameInput;
+    public Button startButton;
+    public Button cancelButton;
+    public Text statusText;
+    public Image textureImage;
+    public InputField imageUrlInput;
 
     private CreatubblesApiClient creatubbles;
     private CreationUploadSession creationUploadSession;
+
+    private string Status { set { statusText.text = value; } }
+    private Texture2D imageTexture { get { return textureImage.mainTexture as Texture2D; } }
+    private string ImageUrl { get { return imageUrlInput.text; } }
 
     // Use this for initialization.
     void Start()
@@ -51,25 +62,20 @@ public class CreatubblesApiDemo: MonoBehaviour
         // configuration - in order for the API client to function properly it requires a simple configuration class containing information such as base URL, app ID and secret
         // secureStorage - currently only InMemoryStorage is available as part of the SDK, however user can provide his / her own implementation
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
-
-//        StartCoroutine(SendRequests());
     }
 	
     // Update is called once per frame.
     void Update()
     {
-        if (creationUploadSession != null)
+        if (creationUploadSession != null && !creationUploadSession.IsCancelled)
         {
-            if (creationUploadSession.IsCancelled)
-            {
-                progressText.text = "Cancelled";
-            }
-            else
-            {
-                int progress = (int)(creationUploadSession.UploadProgress * 100);
-                progressText.text = "Upload progress: " + progress + "%";
-            }
+            progressImage.fillAmount = creationUploadSession.UploadProgress;
         }
+    }
+
+    public void StartUploadButtonClicked()
+    {
+        StartCoroutine(UploadCreation());
     }
 
     public void CancelUploadButtonClicked()
@@ -79,37 +85,36 @@ public class CreatubblesApiDemo: MonoBehaviour
             creationUploadSession.Cancel();
         }
     }
-
-    // Example of getting landing URLs, logging in and uploading a creation.
-    IEnumerator SendRequests()
-    {
-        // upload new creation
-        yield return UploadCreation("[TEST] Unity Creation");
-    }
-
-    #region API related methods
-
-
-
+        
     // Creates a new Creation entity and uploads an image with it.
-    IEnumerator UploadCreation(string name)
+    IEnumerator UploadCreation()
     {
-        byte[] imageData = texture.EncodeToPNG();
+        Started();
 
-        NewCreationData creationData = new NewCreationData(imageData, UploadExtension.PNG);
-        creationData.name = name;
+        NewCreationData creationData;
+        // if user provided URL, prepare upload with URL
+        if (ImageUrl != null && ImageUrl.Length > 0)
+        {
+            creationData = new NewCreationData(ImageUrl, UploadExtension.PNG);
+        }
+        // otherwise prepare upload with local texture
+        else
+        {
+            byte[] imageData = imageTexture.EncodeToPNG();
+            creationData = new NewCreationData(imageData, UploadExtension.PNG);
+        }
+        creationData.name = creationNameInput.text;
         creationData.creationMonth = DateTime.Now.Month;
         creationData.creationYear = DateTime.Now.Year;
 
         creationUploadSession = new CreationUploadSession(creationData);
 
-        Log("Uploading creation...");
         yield return creationUploadSession.Upload(creatubbles);
 
         // cancelling upload session will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
         if (creationUploadSession.IsCancelled)
         {
-            Log("Request cancelled by user");
+            Cancelled();
             yield break;
         }
 
@@ -117,49 +122,53 @@ public class CreatubblesApiDemo: MonoBehaviour
         {
             if (creationUploadSession.IsSystemError)
             {
-                Log("System error: " + creationUploadSession.SystemError);
+                Debug.Log("System error: " + creationUploadSession.SystemError);
             }
             else if (creationUploadSession.IsApiError && creationUploadSession.ApiErrors != null && creationUploadSession.ApiErrors.Length > 0)
             {
                 // if unauthorized, log user out
-                Log("API error: " + creationUploadSession.ApiErrors[0].title);
+                Debug.Log("API error: " + creationUploadSession.ApiErrors[0].title);
             }
             else if (creationUploadSession.IsInternalError)
             {
-                Log("Internal error: " + creationUploadSession.InternalError);
+                Debug.Log("Internal error: " + creationUploadSession.InternalError);
             }
 
             creationUploadSession = null;
+            Failed();
             yield break;
         }
 
-        Log("Creation uploaded successfully");
-
         creationUploadSession = null;
+        Successful();
     }
 
-    #endregion
-
-    #region Helper methods
-
-    private void HandleApiErrors<T>(ApiRequest<T> request)
+    private void Started()
     {
-        if (request.IsSystemError)
-        {
-            Log("System error: " + request.SystemError);
-        }
-        else if (request.IsHttpError && request.apiErrors != null && request.apiErrors.Length > 0)
-        {
-            // if unauthorized, log user out
-            Log("API error: " + request.apiErrors[0].title);
-        }
+        Status = StatusUploading;
+        progressImage.fillAmount = 0;
+        startButton.interactable = false;
+        cancelButton.interactable = true;
     }
 
-    private void Log(string text)
+    private void Successful()
     {
-        textControl.text += "\n\n" + text;
-        Debug.Log(text);
+        Status = StatusSuccess;
+        startButton.interactable = true;
+        cancelButton.interactable = false;
     }
 
-    #endregion
+    private void Failed()
+    {
+        Status = StatusFailure;
+        startButton.interactable = true;
+        cancelButton.interactable = false;
+    }
+
+    private void Cancelled()
+    {
+        Status = StatusCancelled;
+        startButton.interactable = true;
+        cancelButton.interactable = false;
+    }
 }
