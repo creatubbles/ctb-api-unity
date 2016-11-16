@@ -83,45 +83,13 @@ public class CreatubblesApiDemo: MonoBehaviour
     // Example of getting landing URLs, logging in and uploading a creation.
     IEnumerator SendRequests()
     {
-        // get landing URLs (public request)
-        yield return GetLandingUrls();
-
-        Log("-------");
         // upload new creation
         yield return UploadCreation("[TEST] Unity Creation");
     }
 
     #region API related methods
 
-    IEnumerator GetLandingUrls()
-    {
-        ApiRequest<LandingUrlsResponse> request = creatubbles.CreateGetLandingUrlsRequest();
 
-        Log("Sending request: " + request.Url);
-
-        // getting landing URLs is a public request
-        yield return creatubbles.SendRequest(request);
-
-        // cancelling request will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
-        if (request.IsCancelled)
-        {
-            Debug.Log("Request cancelled by user");
-            yield break;
-        }
-
-        if (request.IsAnyError)
-        {
-            HandleApiErrors<LandingUrlsResponse>(request);
-            yield break;
-        }
-
-        // do something useful with the result
-        LandingUrlsResponse response = request.Data;
-        if (response != null && response.data != null && response.data.Length > 0)
-        {
-            Log("Response data: " + response.data[0].ToString());
-        }
-    }
 
     // Creates a new Creation entity and uploads an image with it.
     IEnumerator UploadCreation(string name)

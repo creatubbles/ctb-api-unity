@@ -38,5 +38,7 @@ namespace Creatubbles.Api.Data
         public string id;
         public string type;
         public LandingUrlAttributesDto attributes;
+
+        public string Url { get { return attributes.url; } }
     }
 }
