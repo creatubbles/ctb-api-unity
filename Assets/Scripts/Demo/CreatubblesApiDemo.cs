@@ -1,5 +1,5 @@
 ﻿//
-//  WebDemoScript.cs
+//  CreatubblesApiDemo.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2016 Creatubbles Pte. Ltd.
@@ -34,8 +34,10 @@ using Creatubbles.Api.Storage;
 using Creatubbles.Api.Requests;
 using Creatubbles.Api.Data;
 
-public class WebDemoScript: MonoBehaviour
+public class CreatubblesApiDemo: MonoBehaviour
 {
+    
+
     public Text textControl;
     public Text progressText;
     public Texture2D texture;
@@ -50,7 +52,7 @@ public class WebDemoScript: MonoBehaviour
         // secureStorage - currently only InMemoryStorage is available as part of the SDK, however user can provide his / her own implementation
         creatubbles = new CreatubblesApiClient(new CreatubblesConfiguration(), new InMemoryStorage());
 
-        StartCoroutine(SendRequests());
+//        StartCoroutine(SendRequests());
     }
 	
     // Update is called once per frame.
@@ -83,10 +85,6 @@ public class WebDemoScript: MonoBehaviour
     {
         // get landing URLs (public request)
         yield return GetLandingUrls();
-
-        Log("-------");
-        // login and get user profile (OAuth and private request)
-        yield return LogIn(SecretData.Username, SecretData.Password);
 
         Log("-------");
         // upload new creation
@@ -123,32 +121,6 @@ public class WebDemoScript: MonoBehaviour
         {
             Log("Response data: " + response.data[0].ToString());
         }
-    }
-
-    // Creates and sends a log in request, if successful saves the returned token in ISecureStorage instance.
-    // After log in request is complete user profile is fetched from the API.
-    IEnumerator LogIn(string username, string password)
-    {
-        OAuthRequest request = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendLogInRequest(request);
-
-        // cancelling request will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
-        if (request.IsCancelled)
-        {
-            Debug.Log("Request cancelled by user");
-            yield break;
-        }
-
-        if (request.IsAnyError)
-        {
-            HandleOAuthError(request);
-            yield break;
-        }
-
-        yield return GetLoggedInUser();
     }
 
     // Creates a new Creation entity and uploads an image with it.
@@ -201,43 +173,6 @@ public class WebDemoScript: MonoBehaviour
     #endregion
 
     #region Helper methods
-
-    // Creates and sends request for fetching current user data (user must be already logged in, otherwise request will fail with 'unauthorized' error).
-    IEnumerator GetLoggedInUser()
-    {
-        ApiRequest<LoggedInUserResponse> request = creatubbles.CreateGetLoggedInUserRequest();
-
-        Log("Sending request: " + request.Url);
-
-        yield return creatubbles.SendRequest(request);
-
-
-        if (request.IsAnyError)
-        {
-            HandleApiErrors(request);
-            yield break;
-        }
-
-        if (request.Data == null || request.Data.data == null)
-        {
-            Debug.Log("Error: Invalid or missing data in response");
-            yield break;
-        }
-
-        Log("Success with data: " + request.Data.data.ToString());
-    }
-
-    private void HandleOAuthError(OAuthRequest request)
-    {
-        if (request.IsSystemError)
-        {
-            Log("System error: " + request.SystemError);
-        }
-        else if (request.IsHttpError && request.oAuthError != null)
-        {
-            Log("API error: " + request.oAuthError.error_description);
-        }
-    }
 
     private void HandleApiErrors<T>(ApiRequest<T> request)
     {

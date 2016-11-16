@@ -70,6 +70,7 @@ namespace Creatubbles.Api
         public IEnumerator SendLogInRequest(OAuthRequest request)
         {
             SetAcceptLanguageHeader(request);
+            SetAcceptHeaderJson(request);
 
             yield return request.Send();
 
@@ -92,6 +93,7 @@ namespace Creatubbles.Api
         public IEnumerator SendRequest(HttpRequest request)
         {
             SetAcceptLanguageHeader(request);
+            SetAcceptHeaderJson(request);
 
             switch (request.requestType)
             {
@@ -454,6 +456,11 @@ namespace Creatubbles.Api
         private void SetAcceptLanguageHeader(HttpRequest request)
         {
             request.SetRequestHeader("Accept-Language", configuration.Locale);
+        }
+
+        private void SetAcceptHeaderJson(HttpRequest request)
+        {
+            request.SetRequestHeader("Accept", "application/vnd.api+json");
         }
 
         #endregion
