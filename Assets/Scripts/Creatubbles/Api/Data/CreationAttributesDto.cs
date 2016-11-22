@@ -37,18 +37,18 @@ namespace Creatubbles.Api.Data
     {
         public string name;
         public bool approved;
-        public string approval_status; // TODO - enum
+        public string approval_status;
         public string created_at_age;
-        public string image; // TODO - object
-        public int image_status; // TODO - enum
+        public string image;
+        public int image_status;
         public int bubbles_count;
         public int comments_count;
         public int views_count;
-        public string last_bubbled_at; // TODO - DateTime
-        public string last_commented_at; // TODO - DateTime
-        public string last_submitted_at; // TODO - DateTime
+        public string last_bubbled_at;
+        public string last_commented_at;
+        public string last_submitted_at;
         public string short_url;
-        public string created_at; // TODO - DateTime
+        public string created_at;
     }
 }
 

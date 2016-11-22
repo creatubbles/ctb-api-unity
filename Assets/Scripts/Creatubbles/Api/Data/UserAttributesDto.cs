@@ -39,9 +39,9 @@ namespace Creatubbles.Api.Data
         public string display_name;
         public string list_name;
         public string name;
-        public string role; // TODO - enum
+        public string role;
         public int age;
-        public string gender; // TODO - enum
+        public string gender;
         public string country_code;
         public string country_name;
         public string avatar_url;
@@ -54,13 +54,13 @@ namespace Creatubbles.Api.Data
         public int creators_count;
         public int galleries_count;
         public int managers_count;
-        public string last_bubbled_at; // TODO - DateTime
-        public string last_commented_at; // TODO - DateTime
+        public string last_bubbled_at;
+        public string last_commented_at;
         public bool signed_up_as_instructor;
         public string what_do_you_teach;
         public string interests;
         public bool home_schooling;
-        public string created_at; // TODO - DateTime
-        public string updated_at; // TODO - DateTime
+        public string created_at;
+        public string updated_at;
     }
 }

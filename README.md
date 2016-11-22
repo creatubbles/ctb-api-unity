@@ -3,7 +3,7 @@
 ## Creatubbles API Client Unity SDK
 Creatubbles API Client Unity SDK is a simple library built to help you communicate with the latest [Creatubbles API](https://stateoftheart.creatubbles.com/api/).
 
-Current SDK version: `0.1.0`  
+Current SDK version: `0.1.1`  
 Supported Unity versions: `5.4.x` and newer  
 Supported output platforms: `iOS`, `macOS` (and possibly others, not yet confirmed)
 

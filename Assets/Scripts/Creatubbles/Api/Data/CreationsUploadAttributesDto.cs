@@ -39,10 +39,10 @@ namespace Creatubbles.Api.Data
         public string post_url;
         public string content_type;
         public string ping_url;
-        public string completed_at; // TODO - DateTime
+        public string completed_at;
         public bool aborted;
         public bool processing_completed;
-        public string created_at; // TODO - DateTime
-        public string updated_at; // TODO - DateTime
+        public string created_at;
+        public string updated_at;
     }
 }
