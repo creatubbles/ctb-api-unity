@@ -9,6 +9,8 @@ var hierarchy =
     [ "Creatubbles.Api.Data.CreationsUploadDto", "class_creatubbles_1_1_api_1_1_data_1_1_creations_upload_dto.html", null ],
     [ "Creatubbles.Api.Requests.CreationsUploadPostResponse", "class_creatubbles_1_1_api_1_1_requests_1_1_creations_upload_post_response.html", null ],
     [ "Creatubbles.Api.CreatubblesApiClient", "class_creatubbles_1_1_api_1_1_creatubbles_api_client.html", null ],
+    [ "Creatubbles.Api.Requests.GallerySubmissionDto", "class_creatubbles_1_1_api_1_1_requests_1_1_gallery_submission_dto.html", null ],
+    [ "Creatubbles.Api.Requests.GallerySubmissionResponse", "class_creatubbles_1_1_api_1_1_requests_1_1_gallery_submission_response.html", null ],
     [ "Creatubbles.Api.IApiConfiguration", "interface_creatubbles_1_1_api_1_1_i_api_configuration.html", null ],
     [ "Creatubbles.Api.ICancellable", "interface_creatubbles_1_1_api_1_1_i_cancellable.html", [
       [ "Creatubbles.Api.CreationUploadSession", "class_creatubbles_1_1_api_1_1_creation_upload_session.html", null ],

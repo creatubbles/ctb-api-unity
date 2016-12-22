@@ -96,6 +96,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a25982c2a834660bc2e34bebf52ed4142"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a25982c2a834660bc2e34bebf52ed4142">CreatubblesApiClient</a> (<a class="el" href="interface_creatubbles_1_1_api_1_1_i_api_configuration.html">IApiConfiguration</a> configuration, <a class="el" href="interface_creatubbles_1_1_api_1_1_storage_1_1_i_secure_storage.html">ISecureStorage</a> secureStorage)</td></tr>
 <tr class="memdesc:a25982c2a834660bc2e34bebf52ed4142"><td class="mdescLeft">&#160;</td><td class="mdescRight">Initializes a new instance of the <a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html" title="This is the main class of Creatubbles API Client Unity SDK used for creating and sending Creatubbles ...">Creatubbles.Api.CreatubblesApiClient</a> class.  <a href="#a25982c2a834660bc2e34bebf52ed4142">More...</a><br /></td></tr>
 <tr class="separator:a25982c2a834660bc2e34bebf52ed4142"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0ef5a65052307e7f3c236cf6d0399059"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a0ef5a65052307e7f3c236cf6d0399059">SetAuthenticationToken</a> (string accessToken)</td></tr>
+<tr class="memdesc:a0ef5a65052307e7f3c236cf6d0399059"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sets the authentication token to be used for authenticating requests.  <a href="#a0ef5a65052307e7f3c236cf6d0399059">More...</a><br /></td></tr>
+<tr class="separator:a0ef5a65052307e7f3c236cf6d0399059"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4af52dca7c5e9f5df6a46c0ea6156535"><td class="memItemLeft" align="right" valign="top">IEnumerator&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a4af52dca7c5e9f5df6a46c0ea6156535">SendLogInRequest</a> (<a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_o_auth_request.html">OAuthRequest</a> request)</td></tr>
 <tr class="memdesc:a4af52dca7c5e9f5df6a46c0ea6156535"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sends log in request and saves the token to secure storage if successful.  <a href="#a4af52dca7c5e9f5df6a46c0ea6156535">More...</a><br /></td></tr>
 <tr class="separator:a4af52dca7c5e9f5df6a46c0ea6156535"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -135,6 +138,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:afa9ee02140eb38ca79da2b9dc7a06f6b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_http_request.html">HttpRequest</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#afa9ee02140eb38ca79da2b9dc7a06f6b">CreatePutUploadFinishedRequest</a> (string pingUrl, string abortedWithMessage=null)</td></tr>
 <tr class="memdesc:afa9ee02140eb38ca79da2b9dc7a06f6b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates update creation upload request.  <a href="#afa9ee02140eb38ca79da2b9dc7a06f6b">More...</a><br /></td></tr>
 <tr class="separator:afa9ee02140eb38ca79da2b9dc7a06f6b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0914db57f437765391ccd84f7d243dd4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_api_request.html">ApiRequest</a>&lt; <a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_gallery_submission_response.html">GallerySubmissionResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a0914db57f437765391ccd84f7d243dd4">CreateGallerySubmissionRequest</a> (string galleryId, string creationId)</td></tr>
+<tr class="memdesc:a0914db57f437765391ccd84f7d243dd4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates creation gallery submission request.  <a href="#a0914db57f437765391ccd84f7d243dd4">More...</a><br /></td></tr>
+<tr class="separator:a0914db57f437765391ccd84f7d243dd4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>This is the main class of <a class="el" href="namespace_creatubbles.html">Creatubbles</a> API Client Unity SDK used for creating and sending <a class="el" href="namespace_creatubbles.html">Creatubbles</a> API requests. </p>
@@ -199,6 +205,45 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">url</td><td>Absolute URL of the file to be downloaded.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0914db57f437765391ccd84f7d243dd4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0914db57f437765391ccd84f7d243dd4">&sect;&nbsp;</a></span>CreateGallerySubmissionRequest()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_api_request.html">ApiRequest</a>&lt;<a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_gallery_submission_response.html">GallerySubmissionResponse</a>&gt; Creatubbles.Api.CreatubblesApiClient.CreateGallerySubmissionRequest </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>galleryId</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>creationId</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Creates creation gallery submission request. </p>
+<p>This request submits a creation to a gallery. More info at <a href="https://stateoftheart.creatubbles.com/api/#submit-creation-to-the-gallery">https://stateoftheart.creatubbles.com/api/#submit-creation-to-the-gallery</a>. </p>
+<dl class="section return"><dt>Returns</dt><dd>The update creation upload request.</dd></dl>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">galleryId</td><td>Id of the gallery to upload to.</td></tr>
+    <tr><td class="paramname">creationId</td><td>Id of the creation to upload.</td></tr>
   </table>
   </dd>
 </dl>
@@ -568,6 +613,32 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">request</td><td>Request.</td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a0ef5a65052307e7f3c236cf6d0399059"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0ef5a65052307e7f3c236cf6d0399059">&sect;&nbsp;</a></span>SetAuthenticationToken()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void Creatubbles.Api.CreatubblesApiClient.SetAuthenticationToken </td>
+          <td>(</td>
+          <td class="paramtype">string&#160;</td>
+          <td class="paramname"><em>accessToken</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Sets the authentication token to be used for authenticating requests. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">token</td><td>Token.</td></tr>
   </table>
   </dd>
 </dl>
