@@ -137,6 +137,9 @@ namespace Creatubbles.Api
         /// <summary>
         /// Triggers series of requests forming new creation entity, uploading file, updating creation with uploaded file's URL and notifying server when upload is finished.
         /// </summary>
+        /// <remarks>
+        /// Will submit the creation to a gallery, if <c>galleryId</c> is not <c>null</c> and is not empty.
+        /// </remarks>
         /// <param name="creatubbles">Creatubbles API Client instance.</param>
         public IEnumerator Upload(CreatubblesApiClient creatubbles)
         {
@@ -246,6 +249,33 @@ namespace Creatubbles.Api
             }
 
             yield return NotifyFileUploadFinished(creatubbles, upload.ping_url);
+
+            if (IsCancelled)
+            {
+                FinishWithInternalError(InternalErrorUserCancelled);
+                yield break;
+            }
+
+            // if galleryId is specified, submit the creation to the gallery
+            if (!String.IsNullOrEmpty(creationData.galleryId))
+            {
+                var gallerySubmissionRequest = creatubbles.CreateGallerySubmissionRequest(creationData.galleryId, creationId);
+                currentRequest = gallerySubmissionRequest;
+
+                yield return creatubbles.SendRequest(gallerySubmissionRequest);
+
+                if (gallerySubmissionRequest.IsAnyError)
+                {
+                    FinishWithErrors(gallerySubmissionRequest);
+                    yield break;
+                }
+
+                if (gallerySubmissionRequest.Data == null || gallerySubmissionRequest.Data.data == null)
+                {
+                    FinishWithInternalError(InternalErrorMissingOrInvalidResponseData);
+                    yield break;
+                }
+            }
 
             IsDone = true;
         }

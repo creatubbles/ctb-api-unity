@@ -60,7 +60,16 @@ namespace Creatubbles.Api
             this.secureStorage = secureStorage;
         }
 
-        #region Methods for sending requests and managing user session
+        #region Methods for managing authentication tokens and sending requests
+
+        /// <summary>
+        /// Sets the authentication token to be used for authenticating requests.
+        /// </summary>
+        /// <param name="token">Token.</param>
+        public void SetAuthenticationToken(string accessToken)
+        {
+            secureStorage.SaveValue(UserAccessTokenKey, accessToken);
+        }
 
         /// <summary>
         /// Sends log in request and saves the token to secure storage if successful.
@@ -423,6 +432,34 @@ namespace Creatubbles.Api
             request.downloadHandler = new DownloadHandlerBuffer();
 
             return new HttpRequest(request, HttpRequest.Type.Private);
+        }
+
+        /// <summary>
+        /// Creates creation gallery submission request.
+        /// </summary>
+        /// <remarks>
+        /// This request submits a creation to a gallery.
+        /// More info at https://stateoftheart.creatubbles.com/api/#submit-creation-to-the-gallery.
+        /// </remarks>
+        /// <returns>The update creation upload request.</returns>
+        /// <param name="galleryId">Id of the gallery to upload to.</param>
+        /// <param name="creationId">Id of the creation to upload.</param>
+        public ApiRequest<GallerySubmissionResponse> CreateGallerySubmissionRequest(string galleryId, string creationId)
+        {
+            string url = RequestUrl("/gallery_submissions");
+            WWWForm parameters = new WWWForm();
+            if (galleryId != null)
+            {
+                parameters.AddField("gallery_id", galleryId);
+            }
+            if (creationId != null)
+            {
+                parameters.AddField("creation_id", creationId);
+            }
+            UnityWebRequest request = UnityWebRequest.Post(url, parameters);
+            request.downloadHandler = new DownloadHandlerBuffer();
+
+            return new ApiRequest<GallerySubmissionResponse>(request, HttpRequest.Type.Private);
         }
 
         #endregion
