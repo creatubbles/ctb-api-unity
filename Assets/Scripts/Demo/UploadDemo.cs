@@ -43,6 +43,7 @@ public class UploadDemo: MonoBehaviour
 
     public Image progressImage;
     public InputField creationNameInput;
+    public InputField galleryIdInput;
     public Button startButton;
     public Button cancelButton;
     public Text statusText;
@@ -104,6 +105,7 @@ public class UploadDemo: MonoBehaviour
             creationData = new NewCreationData(imageData, UploadExtension.PNG);
         }
         creationData.name = creationNameInput.text;
+        creationData.galleryId = galleryIdInput.text;
         creationData.creationMonth = DateTime.Now.Month;
         creationData.creationYear = DateTime.Now.Year;
 
