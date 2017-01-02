@@ -1,3 +1,8 @@
+## 0.1.3 (2017-01-02)
+
+Code improvements:
+- add null checks for `galleryId` and `creationId` to `CreatubblesApiClient :: CreateGallerySubmissionRequest()`
+
 ## 0.1.2 (2016-12-22)
 
 Features:

@@ -442,20 +442,25 @@ namespace Creatubbles.Api
         /// More info at https://stateoftheart.creatubbles.com/api/#submit-creation-to-the-gallery.
         /// </remarks>
         /// <returns>The update creation upload request.</returns>
-        /// <param name="galleryId">Id of the gallery to upload to.</param>
-        /// <param name="creationId">Id of the creation to upload.</param>
+        /// <param name="galleryId">Id of the gallery to upload to. REQUIRED.</param>
+        /// <param name="creationId">Id of the creation to upload. REQUIRED.</param>
         public ApiRequest<GallerySubmissionResponse> CreateGallerySubmissionRequest(string galleryId, string creationId)
         {
+            if (galleryId == null)
+            {
+                throw new ArgumentNullException("galleryId");
+            }
+
+            if (creationId == null)
+            {
+                throw new ArgumentNullException("creationId");
+            }
+
             string url = RequestUrl("/gallery_submissions");
             WWWForm parameters = new WWWForm();
-            if (galleryId != null)
-            {
-                parameters.AddField("gallery_id", galleryId);
-            }
-            if (creationId != null)
-            {
-                parameters.AddField("creation_id", creationId);
-            }
+            parameters.AddField("gallery_id", galleryId);
+            parameters.AddField("creation_id", creationId);
+
             UnityWebRequest request = UnityWebRequest.Post(url, parameters);
             request.downloadHandler = new DownloadHandlerBuffer();
 
