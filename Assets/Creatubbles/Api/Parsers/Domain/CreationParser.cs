@@ -54,7 +54,7 @@ namespace Creatubbles.Api.Parsers
             attributesJson.ParseAndAssignBool("approved", a => creation.approved = a, errors);
             attributesJson.ParseAndAssignString("approval_status", a => creation.approval_status = a, errors);
             attributesJson.ParseAndAssignString("created_at_age", ca => creation.created_at = ca, errors);
-            attributesJson.ParseAndAssignString("image", i => creation.image = i, errors);
+            attributesJson.ParseAndAssignObject("image", i => creation.images = i, errors, new CreationImageUrlsParser());
             attributesJson.ParseAndAssignInt("image_status", i => creation.image_status = i, errors);
             attributesJson.ParseAndAssignInt("bubbles_count", bc => creation.bubbles_count = bc, errors);
             attributesJson.ParseAndAssignInt("comments_count", cc => creation.comments_count = cc, errors);

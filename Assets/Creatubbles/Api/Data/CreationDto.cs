@@ -40,7 +40,7 @@ namespace Creatubbles.Api.Data
         public bool approved;
         public string approval_status;
         public string created_at_age;
-        public string image;
+        public CreationImageUrlsDto images;
         public int image_status;
         public int bubbles_count;
         public int comments_count;
@@ -59,7 +59,7 @@ namespace Creatubbles.Api.Data
                 + "\napproved: " + approved
                 + "\nlistapproval_status: " + approval_status
                 + "\ncreated_at_age: " + created_at_age
-                + "\nimage: " + image
+                + "\nimages: " + images.ToString()
                 + "\nimage_status: " + image_status
                 + "\nbubbles_count: " + bubbles_count
                 + "\ncomments_count: " + comments_count

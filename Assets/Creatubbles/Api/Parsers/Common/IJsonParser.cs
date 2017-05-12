@@ -34,4 +34,3 @@ namespace Creatubbles.Api.Parsers
         ParsingResult<T> ParseNode(JSONNode json, string key, bool isRequired = false);
     }
 }
-

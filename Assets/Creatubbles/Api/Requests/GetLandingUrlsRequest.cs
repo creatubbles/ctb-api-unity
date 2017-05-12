@@ -1,5 +1,5 @@
 ﻿//
-//  PasswordAuthenticateRequest.cs
+//  GetLandingUrlsRequest.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2017 Creatubbles Pte. Ltd.
@@ -23,28 +23,19 @@
 //  THE SOFTWARE.
 //
 using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 using Creatubbles.Api.Data;
 using Creatubbles.Api.Parsers;
+using System.Collections.Generic;
 
 namespace Creatubbles.Api.Requests
 {
-    public class PasswordAuthenticationRequest: Request
+    public class GetLandingUrlsRequest: DataRequest<IList<LandingUrlDto>>
     {
-        public PasswordAuthenticationRequest(string username, string password, string clientId, string clientSecret)
+        public GetLandingUrlsRequest(AuthorizationType authorizationType): base(new ArrayParser<LandingUrlDto>(new LandingUrlParser()), "data")
         {
-            Path = "/oauth/token";
-            Method = HttpMethod.POST;
-            Authorization = AuthorizationType.None;
-
-            AddField("grant_type", "password");
-            AddField("client_id", clientId);
-            AddField("client_secret", clientSecret);
-            AddField("username", username);
-            AddField("password", password);
+            Path = "/landing_urls";
+            Method = HttpMethod.GET;
+            Authorization = authorizationType;
         }
     }
 }

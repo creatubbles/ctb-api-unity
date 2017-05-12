@@ -51,6 +51,11 @@ public class Demo: MonoBehaviour, ICoroutineStarter
     // Use this for initialization
     IEnumerator Start()
     {
+        // set private authentication token for private requests to pass authorization
+        creatubbles.SetAuthenticationToken(SecretData.PrivateAuthenticationToken);
+
+        yield return StartCoroutine(GetLoggedInUserWithLandingUrlsAndCreation());
+
         yield return StartCoroutine(UploadCreation());
     }
 
@@ -58,18 +63,58 @@ public class Demo: MonoBehaviour, ICoroutineStarter
     void Update()
     {
         float currentProgress = uploadSession == null ? 0 : uploadSession.FileUploadProgress;
-        if (Math.Abs(currentProgress - lastProgress) > 0.1)
+        if (currentProgress > 0 && Math.Abs(currentProgress - lastProgress) > 0.1)
         {
             Debug.Log("Upload progress: " + currentProgress);
             lastProgress = currentProgress;
         }
     }
 
+    #region Creatubbles methods
+
+    IEnumerator GetLoggedInUserWithLandingUrlsAndCreation()
+    {
+        var userRequest = new GetLoggedInUserRequest();
+
+        yield return StartCoroutine(creatubbles.Send(userRequest));
+
+        if (userRequest.IsError)
+        {
+            LogErrors("Get logged in user failed:", userRequest.Errors);
+            yield break;
+        }
+
+        Debug.Log("Loaded user: " + userRequest.ParsedResponse.display_name + " from " + userRequest.ParsedResponse.country_name);
+
+        // get landing URLs
+        var urlsRequest = new GetLandingUrlsRequest(Request.AuthorizationType.Private);
+
+        yield return StartCoroutine(creatubbles.Send(urlsRequest));
+
+        if (urlsRequest.IsError)
+        {
+            LogErrors("Get landing URLs failed:", urlsRequest.Errors);
+            yield break;
+        }
+
+        Debug.Log("Fetched URLS: \n" + String.Join("\n", urlsRequest.ParsedResponse.Select(url => url.ToString()).ToArray()));
+
+        // get creation
+        var getCreationRequest = new GetCreationRequest(SecretData.CreationId);
+
+        yield return StartCoroutine(creatubbles.Send(getCreationRequest));
+
+        if (getCreationRequest.IsError)
+        {
+            LogErrors("Get creation failed:", getCreationRequest.Errors);
+            yield break;
+        }
+
+        Debug.Log("Fetched creation: " + getCreationRequest.ParsedResponse.ToString());
+    }
+
     IEnumerator UploadCreation()
     {
-        // set authentication token for upload requests to pass authorization
-        creatubbles.SetAuthenticationToken(SecretData.PrivateAuthenticationToken);
-
         var imageData = imageTexture.EncodeToPNG();
         var imageExtension = UploadExtension.PNG;
 
@@ -100,10 +145,8 @@ public class Demo: MonoBehaviour, ICoroutineStarter
 
     private void LogErrors(string title, IList<RequestError> errors)
     {
-        Debug.LogWarning(title);
-        foreach (var error in errors)
-        {
-            Debug.LogError(error);
-        }
+        Debug.LogError(title + "\n" + String.Join("\n", errors.Select(e => e.ToString()).ToArray()));
     }
+
+    #endregion
 }

@@ -1,5 +1,5 @@
 ﻿//
-//  PasswordAuthenticateRequest.cs
+//  CreationImageUrlsDto.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2017 Creatubbles Pte. Ltd.
@@ -23,28 +23,32 @@
 //  THE SOFTWARE.
 //
 using System;
-using System.Linq;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Creatubbles.Api.Data;
-using Creatubbles.Api.Parsers;
 
-namespace Creatubbles.Api.Requests
+namespace Creatubbles.Api.Data
 {
-    public class PasswordAuthenticationRequest: Request
+    public class CreationImageUrlsDto
     {
-        public PasswordAuthenticationRequest(string username, string password, string clientId, string clientSecret)
-        {
-            Path = "/oauth/token";
-            Method = HttpMethod.POST;
-            Authorization = AuthorizationType.None;
+        public string original;
+        public string fullView;
+        public string listViewRetina;
+        public string listView;
+        public string matrixViewRetina;
+        public string matrixView;
+        public string galleryMobile;
+        public string exploreMobile;
+        public string share;
 
-            AddField("grant_type", "password");
-            AddField("client_id", clientId);
-            AddField("client_secret", clientSecret);
-            AddField("username", username);
-            AddField("password", password);
+        public override string ToString()
+        {
+            return "original: " + original
+                + "\nfullView: " + fullView
+                + "\nlistViewRetina: " + listViewRetina
+                + "\nlistView: " + listView
+                + "\nmatrixViewRetina: " + matrixViewRetina
+                + "\nmatrixView: " + matrixView
+                + "\ngalleryMobile: " + galleryMobile
+                + "\nexploreMobile: " + exploreMobile
+                + "\nshare: " + share;
         }
     }
 }
