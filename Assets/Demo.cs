@@ -54,9 +54,11 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         // set private authentication token for private requests to pass authorization
         creatubbles.SetAuthenticationToken(SecretData.PrivateAuthenticationToken);
 
+        yield return StartCoroutine(AuthenticatePublicOAuthAndGetLandingUrls());
+
         yield return StartCoroutine(GetLoggedInUserWithLandingUrlsAndCreation());
 
-        yield return StartCoroutine(UploadCreation());
+//        yield return StartCoroutine(UploadCreation());
     }
 
     // Update is called once per frame
@@ -71,6 +73,34 @@ public class Demo: MonoBehaviour, ICoroutineStarter
     }
 
     #region Creatubbles methods
+
+    IEnumerator AuthenticatePublicOAuthAndGetLandingUrls()
+    {
+        var publicTokenRequest = new GetPublicOAuthTokenRequest();
+
+        yield return StartCoroutine(creatubbles.AuthenticatePublicOAuth(publicTokenRequest));
+
+        if (publicTokenRequest.IsError)
+        {
+            LogErrors("Failed to retrieve public token:", publicTokenRequest.Errors);
+            yield break;
+        }
+
+        Debug.Log("Received public token: " + publicTokenRequest.ParsedResponse.token + ", " + publicTokenRequest.ParsedResponse.tokenType);
+
+        // get landing URLs
+        var urlsRequest = new GetLandingUrlsRequest(Request.AuthorizationType.Public);
+
+        yield return StartCoroutine(creatubbles.Send(urlsRequest));
+
+        if (urlsRequest.IsError)
+        {
+            LogErrors("Get landing URLs failed:", urlsRequest.Errors);
+            yield break;
+        }
+
+        Debug.Log("Fetched URLS: \n" + String.Join("\n", urlsRequest.ParsedResponse.Select(url => url.ToString()).ToArray()));
+    }
 
     IEnumerator GetLoggedInUserWithLandingUrlsAndCreation()
     {

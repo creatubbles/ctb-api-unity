@@ -66,6 +66,21 @@ namespace Creatubbles.Api
             secureStorage.SaveValue(UserAccessTokenKey, accessToken);
         }
 
+        public IEnumerator AuthenticatePublicOAuth(GetPublicOAuthTokenRequest request)
+        {
+            request.AddField("client_id", configuration.AppId);
+            request.AddField("client_secret", configuration.AppSecret);
+
+            yield return coroutineStarter.StartCoroutine(Send(request));
+
+            if (request.IsError)
+            {
+                yield break;
+            }
+
+            secureStorage.SaveValue(AppAccessTokenKey, request.ParsedResponse.token);
+        }
+
         public IEnumerator Send(Request request)
         {
             var url = request.AbsoluteUrl != null ? request.AbsoluteUrl : BaseUrl + request.Path;
