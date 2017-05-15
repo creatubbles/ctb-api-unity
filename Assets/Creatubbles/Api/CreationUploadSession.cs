@@ -71,6 +71,11 @@ namespace Creatubbles.Api
 
         public float FileUploadProgress { get { return uploadRequest == null ? 0 : uploadRequest.UploadProgress; } }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.CreationUploadSession"/> class.
+        /// </summary>
+        /// <param name="creatubbles">Creatubbles API client instance. REQUIRED.</param>
+        /// <param name="creationData">Creation data. REQUIRED.</param>
         public CreationUploadSession(CreatubblesApiClient creatubbles, NewCreationData creationData)
         {
             this.creatubbles = creatubbles;
@@ -79,6 +84,16 @@ namespace Creatubbles.Api
 
         public IEnumerator Upload()
         {
+            if (creatubbles == null)
+            {
+                throw new ArgumentNullException("creatubbles");
+            }
+
+            if (creationData == null)
+            {
+                throw new ArgumentNullException("creationData");
+            }
+
             ResetFlagsAndFields();
 
             var creationId = creationData.creationId;
