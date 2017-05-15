@@ -31,10 +31,25 @@ using Creatubbles.Api.Parsers;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for initializing a new creation on the API.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#create-creation.
+    /// </remarks>
     public class NewCreationRequest: DataRequest<CreationDto>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.NewCreationRequest"/> class.
+        /// </summary>
+        /// <param name="creationData">Data of the creation to initialize. REQUIRED.</param>
         public NewCreationRequest(NewCreationData creationData): base(new CreationParser(), "data")
         {
+            if (creationData == null)
+            {
+                throw new NullReferenceException("creationData");
+            }
+
             Path = "/creations";
             Method = HttpMethod.POST;
             Authorization = AuthorizationType.Private;

@@ -1,5 +1,4 @@
-﻿//
-//  GetLoggedInUserRequest.cs
+﻿//  GetLoggedInUserRequest.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2017 Creatubbles Pte. Ltd.
@@ -28,6 +27,12 @@ using Creatubbles.Api.Parsers;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for fetching currently logged in user.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#get-user-39-s-profile.
+    /// </remarks>
     public class GetLoggedInUserRequest: DataRequest<UserDto>
     {
         public GetLoggedInUserRequest(): base(new UserParser(), "data")

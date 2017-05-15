@@ -26,8 +26,19 @@ using Creatubbles.Api.Requests;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request to retrieve information from the API, required to upload a creation file.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#create-creation-upload.
+    /// </remarks>
     public class CreationUploadSetupRequest: DataRequest<CreationUploadConfiguration>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.CreationUploadSetupRequest"/> class.
+        /// </summary>
+        /// <param name="creationId">ID of creation for which to retrieve upload information.</param>
+        /// <param name="extension">Extension of file to be uploaded.</param>
         public CreationUploadSetupRequest(string creationId, UploadExtension uploadExtension)
             : base(new CreationUploadConfigurationParser(), "data")
         {

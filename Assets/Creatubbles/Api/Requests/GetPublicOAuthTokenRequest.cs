@@ -1,5 +1,4 @@
-﻿//
-//  GetPublicOAuthTokenRequest.cs
+﻿//  GetPublicOAuthTokenRequest.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2017 Creatubbles Pte. Ltd.
@@ -28,8 +27,17 @@ using Creatubbles.Api.Parsers;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Creatubbles OAuth application token request.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow.
+    /// </remarks>
     public class GetPublicOAuthTokenRequest: DataRequest<OAuthResponse>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.GetPublicOAuthTokenRequest"/> class.
+        /// </summary>
         public GetPublicOAuthTokenRequest(): base(new OAuthResponseParser(), null)
         {
             Path = "/oauth/token";

@@ -1,5 +1,4 @@
-﻿//
-//  GetCreationRequest.cs
+﻿//  GetCreationRequest.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2017 Creatubbles Pte. Ltd.
@@ -28,10 +27,25 @@ using Creatubbles.Api.Parsers;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for fetching a creation from API.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#get-specific-creation.
+    /// </remarks>
     public class GetCreationRequest: DataRequest<CreationDto>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.GetCreationRequest"/> class.
+        /// </summary>
+        /// <param name="creationId">ID of creation to fetch. REQUIRED.</param>
         public GetCreationRequest(string creationId): base(new CreationParser(), "data")
         {
+            if (string.IsNullOrEmpty(creationId))
+            {
+                throw new ArgumentNullException("creationId");
+            }
+
             Path = "/creations/" + creationId;
             Method = HttpMethod.GET;
             Authorization = AuthorizationType.Private;

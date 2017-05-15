@@ -178,10 +178,6 @@ namespace Creatubbles.Api
                 return;
             }
 
-            if (currentRequest != null)
-            {
-                currentRequest.Cancel();
-            }
             IsCancelled = true;
         }
 

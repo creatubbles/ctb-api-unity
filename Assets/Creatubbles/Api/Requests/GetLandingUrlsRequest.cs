@@ -1,5 +1,4 @@
-﻿//
-//  GetLandingUrlsRequest.cs
+﻿//  GetLandingUrlsRequest.cs
 //  Creatubbles API Client Unity SDK
 //
 //  Copyright (c) 2017 Creatubbles Pte. Ltd.
@@ -29,8 +28,24 @@ using System.Collections.Generic;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for retrieving landing URLs.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#list-landing-urls.
+    /// </remarks>
     public class GetLandingUrlsRequest: DataRequest<IList<LandingUrlDto>>
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.GetLandingUrlsRequest"/> class.
+        /// </summary>
+        /// <param name="authorizationType">
+        ///     <list type="bullet">
+        ///         <item><c>Public</c> will return application specific URLs.</item>
+        ///         <item><c>Private</c> will return user specific URLs (user must be logged in first).</item>
+        ///         <item><c>None</c> will cause request to fail.</item>
+        ///     </list>
+        /// </param>
         public GetLandingUrlsRequest(AuthorizationType authorizationType): base(new ArrayParser<LandingUrlDto>(new LandingUrlParser()), "data")
         {
             Path = "/landing_urls";

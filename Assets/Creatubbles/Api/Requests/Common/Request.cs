@@ -135,10 +135,5 @@ namespace Creatubbles.Api.Requests
                 Errors.Add(new RequestError(www.error, ErrorType.Http));
             }
         }
-
-        public void Cancel()
-        {
-            // To be implemented
-        }
     }
 }

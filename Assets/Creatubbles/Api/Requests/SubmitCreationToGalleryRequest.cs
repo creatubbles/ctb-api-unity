@@ -27,16 +27,27 @@ using Creatubbles.Api.Requests;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for submitting creation to a gallery.
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#submit-creation-to-the-gallery.
+    ///</remarks>
     public class SubmitCreationToGalleryRequest: Request
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.SubmitCreationToGalleryRequest"/> class.
+        /// </summary>
+        /// <param name="galleryId">ID of the gallery to upload to. REQUIRED.</param>
+        /// <param name="creationId">ID of the creation to upload. REQUIRED.</param>
         public SubmitCreationToGalleryRequest(string galleryId, string creationId)
         {
-            if (galleryId == null)
+            if (string.IsNullOrEmpty(galleryId))
             {
                 throw new ArgumentNullException("galleryId");
             }
 
-            if (creationId == null)
+            if (string.IsNullOrEmpty(creationId))
             {
                 throw new ArgumentNullException("creationId");
             }

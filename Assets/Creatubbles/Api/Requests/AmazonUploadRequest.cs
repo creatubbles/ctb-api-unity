@@ -25,8 +25,16 @@ using Creatubbles.Api.Data;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for uploading data to Amazon S3.
+    /// </summary>
     public class AmazonUploadRequest: Request
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.AmazonUploadRequest"/> class.
+        /// </summary>
+        /// <param name="data">Data to be uploaded.</param>
+        /// <param name="configuration">Information required to pass the Amazon S3 authentication for file upload.</param>
         public AmazonUploadRequest(byte[] data, CreationUploadConfiguration configuration)
         {
             AbsoluteUrl = configuration.post_url;

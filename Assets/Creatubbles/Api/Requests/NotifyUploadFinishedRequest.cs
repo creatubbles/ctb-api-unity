@@ -20,16 +20,34 @@
 //  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 //  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 //  THE SOFTWARE.
+//
+using System;
 using Creatubbles.Api.Data;
 using Creatubbles.Api.Parsers;
 using Creatubbles.Api.Requests;
 
 namespace Creatubbles.Api.Requests
 {
+    /// <summary>
+    /// Request for notifying the API, that Amazon S3 file upload has finished (either success or failure).
+    /// </summary>
+    /// <remarks>
+    /// More info at https://stateoftheart.creatubbles.com/api/#update-creation-upload.
+    /// </remarks>
     public class NotifyUploadFinishedRequest: Request
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Creatubbles.Api.Requests.NotifyUploadFinishedRequest"/> class.
+        /// </summary>
+        /// <param name="pingUrl">Absolute URL containing upload ID. REQUIRED.</param>
+        /// <param name="abortedWithMessage">Argument included when upload fails. Include the body returned by the failed upload attempt or ‘user’ in case the user aborted the upload.</param>
         public NotifyUploadFinishedRequest(string absoluteUrl, string abortedWithMessage = null)
         {
+            if (string.IsNullOrEmpty(absoluteUrl))
+            {
+                throw new ArgumentNullException("absoluteUrl");
+            }
+
             AbsoluteUrl = absoluteUrl;
             Method = HttpMethod.PUT;
             Authorization = AuthorizationType.Private;
