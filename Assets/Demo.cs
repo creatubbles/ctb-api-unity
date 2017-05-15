@@ -217,7 +217,7 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         publicAuthenticationStatus = OperationStatus.Success;
-        LogInfo("Received public token: " + publicTokenRequest.ParsedResponse.token + ", " + publicTokenRequest.ParsedResponse.tokenType);
+        LogInfo("Fetched public token: " + publicTokenRequest.ParsedResponse.token + ", " + publicTokenRequest.ParsedResponse.tokenType);
     }
 
     IEnumerator AuthenticatePrivateAndGetLoggedInUser()
@@ -243,7 +243,7 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         privateAuthenticationStatus = OperationStatus.Success;
-        LogInfo("Loaded user: " + userRequest.ParsedResponse.display_name + " from " + userRequest.ParsedResponse.country_name + "\n" + userRequest.ParsedResponse.ToString());
+        LogInfo("Fetched user: " + userRequest.ParsedResponse.display_name + " from " + userRequest.ParsedResponse.country_name + "\n" + userRequest.ParsedResponse.ToString());
     }
 
     IEnumerator GetLandingUrls(Request.AuthorizationType authorizationType)

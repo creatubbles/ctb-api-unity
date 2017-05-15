@@ -58,14 +58,18 @@ namespace Creatubbles.Api
         }
 
         /// <summary>
-        /// Sets the authentication token to be used for authenticating requests.
+        /// Sets the user (private) authentication token to be used for authenticating requests.
         /// </summary>
-        /// <param name="token">Token.</param>
+        /// <param name="token">User (private) access token.</param>
         public void SetAuthenticationToken(string accessToken)
         {
             secureStorage.SaveValue(UserAccessTokenKey, accessToken);
         }
 
+        /// <summary>
+        /// Authenticates application (public authentication) with Creatubbles.
+        /// </summary>
+        /// <param name="request">Request for authenticating application with Creatubbles (public authentication).</param>
         public IEnumerator AuthenticatePublicOAuth(GetPublicOAuthTokenRequest request)
         {
             request.AddField("client_id", configuration.AppId);
@@ -81,6 +85,10 @@ namespace Creatubbles.Api
             secureStorage.SaveValue(AppAccessTokenKey, request.ParsedResponse.token);
         }
 
+        /// <summary>
+        /// Sends specified request to the API.
+        /// </summary>
+        /// <param name="request">Request to be sent. Can be inspected after being sent for result.</param>
         public IEnumerator Send(Request request)
         {
             var url = request.AbsoluteUrl != null ? request.AbsoluteUrl : BaseUrl + request.Path;
