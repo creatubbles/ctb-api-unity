@@ -104,17 +104,11 @@ public class Demo: MonoBehaviour, ICoroutineStarter
 
         DrawPrivateAuthentication();
 
-        if (publicAuthenticationStatus == OperationStatus.Success || privateAuthenticationStatus == OperationStatus.Success)
-        {
-            DrawGetLandingUrls();
-        }
+        DrawGetLandingUrls();
 
-        if (privateAuthenticationStatus == OperationStatus.Success)
-        {
-            DrawGetCreation();
+        DrawGetCreation();
 
-            DrawUpload();
-        }
+        DrawUpload();
 
         GUILayout.EndScrollView();
 
@@ -156,12 +150,9 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         {
             StartCoroutine(GetLandingUrls(Request.AuthorizationType.Public));
         }
-        if (privateAuthenticationStatus == OperationStatus.Success)
+        if (GUILayout.Button("Get private URLs"))
         {
-            if (GUILayout.Button("Get private URLs"))
-            {
-                StartCoroutine(GetLandingUrls(Request.AuthorizationType.Private));
-            }
+            StartCoroutine(GetLandingUrls(Request.AuthorizationType.Private));
         }
     }
 

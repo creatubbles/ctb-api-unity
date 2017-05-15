@@ -9,7 +9,7 @@ Supported output platforms: `Android`, `iOS`, `macOS`, `Windows desktop` (and po
 
 *NOTE* For Unity 5 projects, please consider using https://github.com/creatubbles/ctb-api-unity/ instead. It offers cancellable requests, more detailed error reporting and improved performance.
 
-*NOTE2* This library is still under development, and the SDK API might change in the next versions.
+*NOTE2* This library is still under development, and the SDK API might change in the future versions.
 
 ## Documentation
 SDK API reference (Doxygen generated) is available under `Docs/reference/html/` as `index.html`.
