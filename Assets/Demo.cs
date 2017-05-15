@@ -57,6 +57,9 @@ public class Demo: MonoBehaviour, ICoroutineStarter
 
     #region Progress tracking fields
 
+    private Vector2 scrollPosition = Vector2.zero;
+    private string logText = string.Empty;
+
     private OperationStatus publicAuthenticationStatus = OperationStatus.Idle;
     private OperationStatus privateAuthenticationStatus = OperationStatus.Idle;
     private OperationStatus getLandingUrlsStatus = OperationStatus.Idle;
@@ -64,8 +67,8 @@ public class Demo: MonoBehaviour, ICoroutineStarter
     private OperationStatus uploadStatus = OperationStatus.Idle;
 
     private string privateAuthenticationToken = SecretData.PrivateAuthenticationToken;
-    private string getCreationId = "";
-    private string uploadGalleryId = "";
+    private string getCreationId = string.Empty;
+    private string uploadGalleryId = string.Empty;
     private string uploadCreationName = "Unity 4 creation";
 
     #endregion
@@ -88,113 +91,117 @@ public class Demo: MonoBehaviour, ICoroutineStarter
 
     void OnGUI()
     {
-        var margin = 15;
-        var containerWidth = Screen.width - 2 * margin;
-        var elementHeight = 22;
-        var elementSpacing = 6;
-        var positionYDelta = elementHeight + elementSpacing;
-        var subElementMargin = 10;
-        var subElementWidth = containerWidth - subElementMargin;
+        var margin = 20;
+        var contentHeight = Screen.height - 2 * margin;
+        var contentWidth = Screen.width - 2 * margin;
+        var containerWidth = (float)(0.5 * contentWidth) + 100;
 
-        // PUBLIC AUTHENTICATION
-        var currentPositionX = margin;
-        var currentPositionY = margin;
-        var subElementPositionX = currentPositionX + subElementMargin;
-        GUI.Label(new Rect(currentPositionX, currentPositionY, containerWidth, elementHeight), "PUBLIC AUTHENTICATION");
+        GUILayout.BeginHorizontal(GUILayout.Width(Screen.width), GUILayout.Height(Screen.height));
 
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Status: " + publicAuthenticationStatus);
+        scrollPosition = GUILayout.BeginScrollView(scrollPosition, GUILayout.Width(containerWidth), GUILayout.Height(contentHeight));
 
-        currentPositionY += positionYDelta;
-        if (GUI.Button(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Authenticate"))
+        DrawPublicAuthentication();
+
+        DrawPrivateAuthentication();
+
+        if (publicAuthenticationStatus == OperationStatus.Success || privateAuthenticationStatus == OperationStatus.Success)
+        {
+            DrawGetLandingUrls();
+        }
+
+        if (privateAuthenticationStatus == OperationStatus.Success)
+        {
+            DrawGetCreation();
+
+            DrawUpload();
+        }
+
+        GUILayout.EndScrollView();
+
+        logText = GUILayout.TextArea(logText, GUILayout.Width(contentWidth - containerWidth), GUILayout.Height(contentHeight));
+
+        GUILayout.EndHorizontal();
+
+    }
+
+    private void DrawPublicAuthentication()
+    {
+        GUILayout.Label("PUBLIC AUTHENTICATION");
+        DrawStatus(publicAuthenticationStatus);
+        if (GUILayout.Button("Authenticate"))
         {
             StartCoroutine(AuthenticatePublicOAuth());
         }
+    }
 
-        // PRIVATE AUTHENTICATION
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(currentPositionX, currentPositionY, containerWidth, elementHeight), "PRIVATE AUTHENTICATION");
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Status: " + privateAuthenticationStatus);
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Provide access token: ");
-
-        currentPositionY += positionYDelta;
-        privateAuthenticationToken = GUI.TextField(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), privateAuthenticationToken);
-
-        currentPositionY += positionYDelta;
-        if (GUI.Button(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Authenticate"))
+    private void DrawPrivateAuthentication()
+    {
+        DrawSeparator();
+        GUILayout.Label("PRIVATE AUTHENTICATION");
+        DrawStatus(privateAuthenticationStatus);
+        GUILayout.Label("Provide access token:");
+        privateAuthenticationToken = GUILayout.TextField(privateAuthenticationToken);
+        if (GUILayout.Button("Authenticate"))
         {
             StartCoroutine(AuthenticatePrivateAndGetLoggedInUser());
         }
+    }
 
-        // GET LANDING URLs
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(currentPositionX, currentPositionY, containerWidth, elementHeight), "GET LANDING URLS");
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Status: " + getLandingUrlsStatus);
-
-        currentPositionY += positionYDelta;
-        if (GUI.Button(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Get public URLs"))
+    private void DrawGetLandingUrls()
+    {
+        DrawSeparator();
+        GUILayout.Label("GET LANDING URLS");
+        DrawStatus(getLandingUrlsStatus);
+        if (GUILayout.Button("Get public URLs"))
         {
             StartCoroutine(GetLandingUrls(Request.AuthorizationType.Public));
         }
-
-        currentPositionY += positionYDelta;
-        if (GUI.Button(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Get private URLs"))
+        if (privateAuthenticationStatus == OperationStatus.Success)
         {
-            StartCoroutine(GetLandingUrls(Request.AuthorizationType.Private));
+            if (GUILayout.Button("Get private URLs"))
+            {
+                StartCoroutine(GetLandingUrls(Request.AuthorizationType.Private));
+            }
         }
+    }
 
-        // GET CREATION
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(currentPositionX, currentPositionY, containerWidth, elementHeight), "GET CREATION");
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Status: " + getCreationStatus);
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Provide creation ID: ");
-
-        currentPositionY += positionYDelta;
-        getCreationId = GUI.TextField(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), getCreationId);
-
-        currentPositionY += positionYDelta;
-        if (GUI.Button(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Get creation"))
+    private void DrawGetCreation()
+    {
+        DrawSeparator();
+        GUILayout.Label("GET CREATION");
+        DrawStatus(getCreationStatus);
+        GUILayout.Label("Provide creation ID:");
+        getCreationId = GUILayout.TextField(getCreationId);
+        if (GUILayout.Button("Get creation"))
         {
             StartCoroutine(GetCreation(getCreationId));
         }
+    }
 
-        // UPLOAD
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(currentPositionX, currentPositionY, containerWidth, elementHeight), "UPLOAD CREATION");
-
-        currentPositionY += positionYDelta;
-        GUI.DrawTexture(new Rect(subElementPositionX, currentPositionY, elementHeight, elementHeight), imageTexture);
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Status: " + uploadStatus);
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Creation name: ");
-
-        currentPositionY += positionYDelta;
-        uploadCreationName = GUI.TextField(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), uploadCreationName);
-
-        currentPositionY += positionYDelta;
-        GUI.Label(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Gallery ID (to submit creation to): ");
-
-        currentPositionY += positionYDelta;
-        uploadGalleryId = GUI.TextField(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), uploadGalleryId);
-
-        currentPositionY += positionYDelta;
-        if (GUI.Button(new Rect(subElementPositionX, currentPositionY, subElementWidth, elementHeight), "Upload"))
+    private void DrawUpload()
+    {
+        DrawSeparator();
+        GUILayout.Label("UPLOAD CREATION");
+        GUILayout.Box(imageTexture);
+        DrawStatus(uploadStatus);
+        GUILayout.Label("Provide creation name:");
+        uploadCreationName = GUILayout.TextField(uploadCreationName);
+        GUILayout.Label("Gallery ID (to submit creation to): ");
+        uploadGalleryId = GUILayout.TextField(uploadGalleryId);
+        if (GUILayout.Button("Upload"))
         {
             StartCoroutine(UploadCreation(uploadCreationName, uploadGalleryId));
         }
+    }
+
+    private void DrawSeparator()
+    {
+        GUILayout.Label("-------------------");
+    }
+
+    private void DrawStatus(OperationStatus status)
+    {
+        GUILayout.Label("Status: " + status);
     }
 
     #endregion
@@ -203,6 +210,8 @@ public class Demo: MonoBehaviour, ICoroutineStarter
 
     IEnumerator AuthenticatePublicOAuth()
     {
+        ClearLog();
+
         privateAuthenticationStatus = OperationStatus.Idle;
         var publicTokenRequest = new GetPublicOAuthTokenRequest();
 
@@ -217,11 +226,13 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         publicAuthenticationStatus = OperationStatus.Success;
-        Debug.Log("Received public token: " + publicTokenRequest.ParsedResponse.token + ", " + publicTokenRequest.ParsedResponse.tokenType);
+        LogInfo("Received public token: " + publicTokenRequest.ParsedResponse.token + ", " + publicTokenRequest.ParsedResponse.tokenType);
     }
 
     IEnumerator AuthenticatePrivateAndGetLoggedInUser()
     {
+        ClearLog();
+
         privateAuthenticationStatus = OperationStatus.Idle;
 
         // since we're taking the authentication token from the outside source (e.g. code flow), we only need to pass it to the API client to store locally and use it for authenticating requests
@@ -241,11 +252,13 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         privateAuthenticationStatus = OperationStatus.Success;
-        Debug.Log("Loaded user: " + userRequest.ParsedResponse.display_name + " from " + userRequest.ParsedResponse.country_name + "\n" + userRequest.ParsedResponse.ToString());
+        LogInfo("Loaded user: " + userRequest.ParsedResponse.display_name + " from " + userRequest.ParsedResponse.country_name + "\n" + userRequest.ParsedResponse.ToString());
     }
 
     IEnumerator GetLandingUrls(Request.AuthorizationType authorizationType)
     {
+        ClearLog();
+
         getLandingUrlsStatus = OperationStatus.Idle;
 
         var urlsRequest = new GetLandingUrlsRequest(authorizationType);
@@ -261,15 +274,16 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         getLandingUrlsStatus = OperationStatus.Success;
-        Debug.Log("Fetched URLS: \n" + String.Join("\n", urlsRequest.ParsedResponse.Select(url => url.ToString()).ToArray()));
+        LogInfo("Fetched URLS: \n" + String.Join("\n", urlsRequest.ParsedResponse.Select(url => url.ToString()).ToArray()));
     }
 
     IEnumerator GetCreation(string creationId)
     {
+        ClearLog();
+
         getCreationStatus = OperationStatus.Idle;
 
-        // get creation
-        var getCreationRequest = new GetCreationRequest(SecretData.CreationId);
+        var getCreationRequest = new GetCreationRequest(creationId);
 
         getCreationStatus = OperationStatus.InProgress;
         yield return StartCoroutine(creatubbles.Send(getCreationRequest));
@@ -282,11 +296,13 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         getCreationStatus = OperationStatus.Success;
-        Debug.Log("Fetched creation: " + getCreationRequest.ParsedResponse.ToString());
+        LogInfo("Fetched creation: " + getCreationRequest.ParsedResponse.ToString());
     }
 
     IEnumerator UploadCreation(string creationName, string galleryId)
     {
+        ClearLog();
+
         uploadStatus = OperationStatus.Idle;
 
         var imageData = imageTexture.EncodeToPNG();
@@ -300,7 +316,7 @@ public class Demo: MonoBehaviour, ICoroutineStarter
 
         uploadSession = new CreationUploadSession(creatubbles, newCreationData);
 
-        Debug.Log("Upload started");
+        LogInfo("Upload started");
 
         uploadStatus = OperationStatus.InProgress;
         yield return StartCoroutine(uploadSession.Upload());
@@ -308,7 +324,7 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         if (uploadSession.IsCancelled)
         {
             uploadStatus = OperationStatus.Cancelled;
-            Debug.LogWarning("Upload cancelled");
+            LogInfo("Upload cancelled");
             yield break;
         }
         else if (uploadSession.IsError)
@@ -319,12 +335,25 @@ public class Demo: MonoBehaviour, ICoroutineStarter
         }
 
         uploadStatus = OperationStatus.Success;
-        Debug.Log("Upload completed!");
+        LogInfo("Upload completed!");
+    }
+
+    private void ClearLog()
+    {
+        logText = string.Empty;
+    }
+
+    private void LogInfo(string text)
+    {
+        logText += "\n" + text;
+        Debug.Log(text);
     }
 
     private void LogErrors(string title, IList<RequestError> errors)
     {
-        Debug.LogError(title + "\n" + String.Join("\n", errors.Select(e => e.ToString()).ToArray()));
+        var text = title + "\n" + String.Join("\n", errors.Select(e => e.ToString()).ToArray());
+        logText += "\n" + text;
+        Debug.LogError(text);
     }
 
     #endregion
