@@ -115,7 +115,7 @@ namespace Creatubbles.Api
                     }
                     break;
                 case Request.AuthorizationType.Public:
-                    if (secureStorage.HasValue(UserAccessTokenKey))
+                    if (secureStorage.HasValue(AppAccessTokenKey))
                     {
                         var accessToken = secureStorage.LoadValue(AppAccessTokenKey);
                         SetAuthorizationBearerTokenHeader(request, accessToken);
