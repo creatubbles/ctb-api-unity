@@ -40,7 +40,7 @@ namespace Creatubbles.Api.Data
         public string list_name;
         public string name;
         public string role;
-        public int age;
+        public string age;
         public string gender;
         public string country_code;
         public string country_name;
