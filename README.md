@@ -32,9 +32,9 @@ Copy  `Assets/Scripts/Creatubbles` to you project's `Assets/Scripts` folder.
 
     There are solutions available on the Unity Asset Store like [SPrefs](https://www.assetstore.unity3d.com/en/#!/content/56051) or [Secured PlayerPrefs](https://www.assetstore.unity3d.com/en/#!/content/32357), that could be considered for use as underlying implementation.
 
-5. Configure [CreatubblesApiClient](Assets/Scripts/Creatubbles/Api/CreatubblesApiClient) with instances of [IApiConfiguration](Assets/Scripts/Creatubbles/Api/IApiConfiguration.cs) and [ISecureStorage](Assets/Scripts/Creatubbles/Api/Storage/ISecureStorage.cs) from previous steps.
+5. Configure [CreatubblesApiClient](Assets/Scripts/Creatubbles/Api/CreatubblesApiClient.cs) with instances of [IApiConfiguration](Assets/Scripts/Creatubbles/Api/IApiConfiguration.cs) and [ISecureStorage](Assets/Scripts/Creatubbles/Api/Storage/ISecureStorage.cs) from previous steps.
 
-6. Use [CreatubblesApiClient](Assets/Scripts/Creatubbles/Api/CreatubblesApiClient) to create and send requests.
+6. Use [CreatubblesApiClient](Assets/Scripts/Creatubbles/Api/CreatubblesApiClient.cs) to create and send requests.
 
     Examples of using the API client can be found under `Assets/Scripts/Demo`:
     * [Logging in](Assets/Scripts/Demo/LogInDemo.cs)
