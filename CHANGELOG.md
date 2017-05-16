@@ -1,3 +1,9 @@
+## 0.1.4 (2017-05-16)
+
+Changes:
+- replaced sign in portion of the form's username and password input with user token input
+- removed option to upload file via URL from demo scene to simplify user experience
+
 ## 0.1.3 (2017-01-02)
 
 Code improvements:
