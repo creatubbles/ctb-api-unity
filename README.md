@@ -4,15 +4,17 @@
 Creatubbles API Client Unity 4 SDK is a simple library built to help you communicate with the latest [Creatubbles API](https://stateoftheart.creatubbles.com/api/).
 
 Current SDK version: `0.1.3` (see [changelog](https://github.com/creatubbles/ctb-api-unity/blob/master/CHANGELOG.md))
+
 Supported Unity versions: `4.2.0` and newer
+
 Supported output platforms: `Android`, `iOS`, `macOS`, `Windows desktop` (and possibly others, not yet confirmed)
 
-*NOTE* For Unity 5 projects, please consider using https://github.com/creatubbles/ctb-api-unity/ instead for following benefits:
+**NOTE!** For Unity 5 projects, please consider using https://github.com/creatubbles/ctb-api-unity/ instead for following benefits:
 - cancellable requests
 - detailed error reporting
 - improved performance
 
-*NOTE2* This library is still under development, and the SDK API might change in the future versions.
+**NOTE2!** This library is still under development, and the SDK API might change in the future versions.
 
 ## Installation
 Copy  `Assets/Scripts/Creatubbles` to you project's `Assets/Scripts` folder.
