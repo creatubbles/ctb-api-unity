@@ -8,7 +8,6 @@ var searchData=
   ['creategetlandingurlsrequest',['CreateGetLandingUrlsRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a4221aff86163066e8222168415bebd55',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['creategetloggedinuserrequest',['CreateGetLoggedInUserRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a8546eb476d6dbd863422de08369e16eb',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createnewcreationrequest',['CreateNewCreationRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#abf654c6d7c2278a62202a521c3d0ebf5',1,'Creatubbles::Api::CreatubblesApiClient']]],
-  ['createpostauthenticationusertokenrequest',['CreatePostAuthenticationUserTokenRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#ad5b1646cac2f0acd3757b1ef00de0a18',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createpostcreationuploadrequest',['CreatePostCreationUploadRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#ade361e8037b36f6ace49325ca061098b',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createputuploadfinishedrequest',['CreatePutUploadFinishedRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#afa9ee02140eb38ca79da2b9dc7a06f6b',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createuploadfilerequest',['CreateUploadFileRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a2654ef04340dc5ca3eb503d1f3aec7b3',1,'Creatubbles::Api::CreatubblesApiClient']]],

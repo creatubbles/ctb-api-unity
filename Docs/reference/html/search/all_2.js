@@ -9,7 +9,6 @@ var searchData=
   ['creategetlandingurlsrequest',['CreateGetLandingUrlsRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a4221aff86163066e8222168415bebd55',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['creategetloggedinuserrequest',['CreateGetLoggedInUserRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a8546eb476d6dbd863422de08369e16eb',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createnewcreationrequest',['CreateNewCreationRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#abf654c6d7c2278a62202a521c3d0ebf5',1,'Creatubbles::Api::CreatubblesApiClient']]],
-  ['createpostauthenticationusertokenrequest',['CreatePostAuthenticationUserTokenRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#ad5b1646cac2f0acd3757b1ef00de0a18',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createpostcreationuploadrequest',['CreatePostCreationUploadRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#ade361e8037b36f6ace49325ca061098b',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createputuploadfinishedrequest',['CreatePutUploadFinishedRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#afa9ee02140eb38ca79da2b9dc7a06f6b',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['createuploadfilerequest',['CreateUploadFileRequest',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a2654ef04340dc5ca3eb503d1f3aec7b3',1,'Creatubbles::Api::CreatubblesApiClient']]],
@@ -26,8 +25,8 @@ var searchData=
   ['creationyear',['creationYear',['../class_creatubbles_1_1_api_1_1_data_1_1_new_creation_data.html#a053c11aaeaec8d83436e4ee704d998aa',1,'Creatubbles::Api::Data::NewCreationData']]],
   ['creatorids',['creatorIds',['../class_creatubbles_1_1_api_1_1_data_1_1_new_creation_data.html#aae6538ed7aadbe36237794a132ec5eaa',1,'Creatubbles::Api::Data::NewCreationData']]],
   ['creatubbles',['Creatubbles',['../namespace_creatubbles.html',1,'']]],
-  ['creatubblesapiclient',['CreatubblesApiClient',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a25982c2a834660bc2e34bebf52ed4142',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['creatubblesapiclient',['CreatubblesApiClient',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html',1,'Creatubbles::Api']]],
+  ['creatubblesapiclient',['CreatubblesApiClient',['../class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a25982c2a834660bc2e34bebf52ed4142',1,'Creatubbles::Api::CreatubblesApiClient']]],
   ['data',['Data',['../namespace_creatubbles_1_1_api_1_1_data.html',1,'Creatubbles::Api']]],
   ['requests',['Requests',['../namespace_creatubbles_1_1_api_1_1_requests.html',1,'Creatubbles::Api']]],
   ['storage',['Storage',['../namespace_creatubbles_1_1_api_1_1_storage.html',1,'Creatubbles::Api']]]

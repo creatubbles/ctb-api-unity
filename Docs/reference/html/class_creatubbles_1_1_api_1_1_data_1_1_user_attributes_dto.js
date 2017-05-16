@@ -2,7 +2,7 @@ var class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto =
 [
     [ "activities_count", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#a1b5b0b2e706e870209c105ba963670d4", null ],
     [ "added_bubbles_count", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#a3c0d4532b5d74caad9e03f47f477eda8", null ],
-    [ "age", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#add529d518765ffb1d6435d74d1d60903", null ],
+    [ "age", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#a4cd709a19e98ebbd32554746a4fb7f4e", null ],
     [ "avatar_url", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#adb25ae4cf8660a5590ca2f0d7ef638e0", null ],
     [ "bubbles_count", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#aa3792a900c0ae79d455ae865760c710c", null ],
     [ "comments_count", "class_creatubbles_1_1_api_1_1_data_1_1_user_attributes_dto.html#a34a10ec9bb9bf92ba2c5f95712e6af57", null ],

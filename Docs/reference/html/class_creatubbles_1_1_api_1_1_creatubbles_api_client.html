@@ -111,8 +111,8 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a5e8cfcb30c6b17d5e36e168a4042398c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a5e8cfcb30c6b17d5e36e168a4042398c">IsUserLoggedIn</a> ()</td></tr>
 <tr class="memdesc:a5e8cfcb30c6b17d5e36e168a4042398c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Determines whether user is currently logged in.  <a href="#a5e8cfcb30c6b17d5e36e168a4042398c">More...</a><br /></td></tr>
 <tr class="separator:a5e8cfcb30c6b17d5e36e168a4042398c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad5b1646cac2f0acd3757b1ef00de0a18"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_o_auth_request.html">OAuthRequest</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#ad5b1646cac2f0acd3757b1ef00de0a18">CreatePostAuthenticationUserTokenRequest</a> (string username, string password)</td></tr>
-<tr class="memdesc:ad5b1646cac2f0acd3757b1ef00de0a18"><td class="mdescLeft">&#160;</td><td class="mdescRight">Creates <a class="el" href="namespace_creatubbles.html">Creatubbles</a> OAuth log in request.  <a href="#ad5b1646cac2f0acd3757b1ef00de0a18">More...</a><br /></td></tr>
+<tr class="memitem:ad5b1646cac2f0acd3757b1ef00de0a18"><td class="memItemLeft" align="right" valign="top"><a id="ad5b1646cac2f0acd3757b1ef00de0a18"></a>
+<a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_o_auth_request.html">OAuthRequest</a>&#160;</td><td class="memItemRight" valign="bottom"><b>CreatePostAuthenticationUserTokenRequest</b> (string username, string password)</td></tr>
 <tr class="separator:ad5b1646cac2f0acd3757b1ef00de0a18"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4221aff86163066e8222168415bebd55"><td class="memItemLeft" align="right" valign="top"><a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_api_request.html">ApiRequest</a>&lt; <a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_landing_urls_response.html">LandingUrlsResponse</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_creatubbles_1_1_api_1_1_creatubbles_api_client.html#a4221aff86163066e8222168415bebd55">CreateGetLandingUrlsRequest</a> (<a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_http_request.html#ad394d6749cdac8424ea58e4bb490fd05">HttpRequest.Type</a> requestType=HttpRequest.Type.Public)</td></tr>
 <tr class="memdesc:a4221aff86163066e8222168415bebd55"><td class="mdescLeft">&#160;</td><td class="mdescRight">Retrieve all landing URLs (besides creation landing URLs) for a specific application or user.  <a href="#a4221aff86163066e8222168415bebd55">More...</a><br /></td></tr>
@@ -242,8 +242,8 @@ Public Member Functions</h2></td></tr>
 <dl class="section return"><dt>Returns</dt><dd>The update creation upload request.</dd></dl>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">galleryId</td><td>Id of the gallery to upload to.</td></tr>
-    <tr><td class="paramname">creationId</td><td>Id of the creation to upload.</td></tr>
+    <tr><td class="paramname">galleryId</td><td>Id of the gallery to upload to. REQUIRED.</td></tr>
+    <tr><td class="paramname">creationId</td><td>Id of the creation to upload. REQUIRED.</td></tr>
   </table>
   </dd>
 </dl>
@@ -357,45 +357,6 @@ Public Member Functions</h2></td></tr>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">creationData</td><td>Creation data.</td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ad5b1646cac2f0acd3757b1ef00de0a18"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad5b1646cac2f0acd3757b1ef00de0a18">&sect;&nbsp;</a></span>CreatePostAuthenticationUserTokenRequest()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="class_creatubbles_1_1_api_1_1_requests_1_1_o_auth_request.html">OAuthRequest</a> Creatubbles.Api.CreatubblesApiClient.CreatePostAuthenticationUserTokenRequest </td>
-          <td>(</td>
-          <td class="paramtype">string&#160;</td>
-          <td class="paramname"><em>username</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">string&#160;</td>
-          <td class="paramname"><em>password</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Creates <a class="el" href="namespace_creatubbles.html">Creatubbles</a> OAuth log in request. </p>
-<p>More info at <a href="https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow">https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow</a>. </p>
-<dl class="section return"><dt>Returns</dt><dd>OAuth log in request.</dd></dl>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">username</td><td>User's <a class="el" href="namespace_creatubbles.html">Creatubbles</a> account username.</td></tr>
-    <tr><td class="paramname">password</td><td>User's <a class="el" href="namespace_creatubbles.html">Creatubbles</a> account password.</td></tr>
   </table>
   </dd>
 </dl>
