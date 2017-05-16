@@ -48,14 +48,12 @@ public class UploadDemo: MonoBehaviour
     public Button cancelButton;
     public Text statusText;
     public Image textureImage;
-    public InputField imageUrlInput;
 
     private CreatubblesApiClient creatubbles;
     private CreationUploadSession creationUploadSession;
 
     private string Status { set { statusText.text = value; } }
     private Texture2D imageTexture { get { return textureImage.mainTexture as Texture2D; } }
-    private string ImageUrl { get { return imageUrlInput.text; } }
 
     // Use this for initialization.
     void Start()
@@ -93,17 +91,10 @@ public class UploadDemo: MonoBehaviour
         Started();
 
         NewCreationData creationData;
-        // if user provided URL, prepare upload with URL
-        if (ImageUrl != null && ImageUrl.Length > 0)
-        {
-            creationData = new NewCreationData(ImageUrl, UploadExtension.PNG);
-        }
-        // otherwise prepare upload with local texture
-        else
-        {
-            byte[] imageData = imageTexture.EncodeToPNG();
-            creationData = new NewCreationData(imageData, UploadExtension.PNG);
-        }
+
+        byte[] imageData = imageTexture.EncodeToPNG();
+        creationData = new NewCreationData(imageData, UploadExtension.PNG);
+
         creationData.name = creationNameInput.text;
         creationData.galleryId = galleryIdInput.text;
         creationData.creationMonth = DateTime.Now.Month;

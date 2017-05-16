@@ -33,8 +33,7 @@ public class LogInDemo : MonoBehaviour
 {
     #region UI elements
 
-    public InputField usernameInput;
-    public InputField passwordInput;
+    public InputField userTokenInput;
     public Button logInButton;
     public Button logOutButton;
     public Text logInStatusText;
@@ -53,8 +52,7 @@ public class LogInDemo : MonoBehaviour
     public string Status { set { logInStatusText.text = value; } }
     public bool LogInInteractable { set { logInButton.interactable = value; } }
     public bool LogOutInteractable { set { logOutButton.interactable = value; } }
-    public string Username { get { return usernameInput.text; } }
-    public string Password { get { return passwordInput.text; } }
+    public string UserToken { get { return userTokenInput.text; } }
 
 	void Start()
     {
@@ -65,6 +63,8 @@ public class LogInDemo : MonoBehaviour
         Status = StatusNotLoggedIn;
         LogInInteractable = true;
         LogOutInteractable = false;
+
+        userTokenInput.text = SecretData.PrivateAuthenticationToken;
 	}
 	
 	void Update()
@@ -73,7 +73,7 @@ public class LogInDemo : MonoBehaviour
 
     public void LogInButtonClicked()
     {
-        StartCoroutine(LogIn(Username, Password));
+        StartCoroutine(LogIn(UserToken));
     }
 
     public void LogOutButtonClicked()
@@ -86,36 +86,12 @@ public class LogInDemo : MonoBehaviour
 
     // Creates and sends a log in request, if successful saves the returned token in ISecureStorage instance.
     // After log in request is complete user profile is fetched from the API.
-    private IEnumerator LogIn(string username, string password)
+    private IEnumerator LogIn(string userToken)
     {
         LogInStarted();
 
-        // Getting OAuth user token
-        OAuthRequest logInRequest = creatubbles.CreatePostAuthenticationUserTokenRequest(username, password);
-
-        yield return creatubbles.SendLogInRequest(logInRequest);
-
-        // cancelling request will usually cause a System or Internal error to be reported, so we should always check for cancellation before checking for errors
-        if (logInRequest.IsCancelled)
-        {
-            LogInCancelled();
-            yield break;
-        }
-
-        if (logInRequest.IsAnyError)
-        {
-            if (logInRequest.IsSystemError)
-            {
-                Debug.Log("System error: " + logInRequest.SystemError);
-            }
-            else if (logInRequest.IsHttpError && logInRequest.oAuthError != null)
-            {
-                Debug.Log("API error: " + logInRequest.oAuthError.error_description);
-            }
-
-            LogInFailed();
-            yield break;
-        }
+        // set the authentication token to be used by CreatubblesApiClient for authorizing requests
+        creatubbles.SetAuthenticationToken(userToken);
 
         // Getting user profile
         ApiRequest<LoggedInUserResponse> userProfileRequest = creatubbles.CreateGetLoggedInUserRequest();
@@ -124,7 +100,7 @@ public class LogInDemo : MonoBehaviour
 
         yield return creatubbles.SendRequest(userProfileRequest);
 
-        if (logInRequest.IsCancelled)
+        if (userProfileRequest.IsCancelled)
         {
             LogInCancelled();
             yield break;
