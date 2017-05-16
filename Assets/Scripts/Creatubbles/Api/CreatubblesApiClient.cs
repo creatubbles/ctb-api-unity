@@ -228,15 +228,6 @@ namespace Creatubbles.Api
             return new OAuthRequest(request);
         }
 
-        /// <summary>
-        /// Creates Creatubbles OAuth log in request.
-        /// </summary>
-        /// <remarks>
-        /// More info at https://stateoftheart.creatubbles.com/api/#oauth-token-client-credentials-flow.
-        /// </remarks>
-        /// <returns>OAuth log in request.</returns>
-        /// <param name="username">User's Creatubbles account username.</param>
-        /// <param name="password">User's Creatubbles account password.</param>
         public OAuthRequest CreatePostAuthenticationUserTokenRequest(string username, string password)
         {
             string url = RequestUrl("/oauth/token");
